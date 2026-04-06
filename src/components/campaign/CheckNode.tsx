@@ -86,18 +86,18 @@ export function CheckNode({ check, onResult }: CheckNodeProps) {
 
   return (
     <div className="space-y-4">
-      <div className="p-4 bg-muted/30 border border-border rounded-lg">
+      <div className="p-4 bg-card border-2 border-border rounded-lg">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg font-semibold capitalize">
+          <h3 className="text-lg font-bold capitalize text-foreground">
             {check.skill.replace('_', ' ')} Check
           </h3>
-          <span className="px-3 py-1 bg-primary/20 text-primary font-bold rounded">
+          <span className="px-3 py-1 bg-primary text-primary-foreground font-bold rounded-lg">
             DC {check.dc}
           </span>
         </div>
         
         {check.groupCheck && (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-yellow-400 font-semibold">
             🎯 Check de grupo: Todos deben pasar
           </p>
         )}
@@ -151,7 +151,7 @@ export function CheckNode({ check, onResult }: CheckNodeProps) {
                     )}
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-sm text-gray-300 mt-1 font-medium">
                   {r.success ? '✓ Éxito' : '✗ Fallo'} (requiere {check.dc})
                 </p>
               </div>
@@ -167,10 +167,10 @@ export function CheckNode({ check, onResult }: CheckNodeProps) {
             ? 'border-green-500 bg-green-500/10'
             : 'border-red-500 bg-red-500/10'
         }`}>
-          <div className="text-3xl font-bold mb-2">
+          <div className="text-3xl font-bold mb-2 text-foreground">
             {finalResult ? '✓ Éxito del Grupo' : '✗ Fallo del Grupo'}
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-gray-300 font-medium">
             {finalResult ? 'El grupo supera el desafío' : 'El grupo no logra superarlo'}
           </p>
         </div>

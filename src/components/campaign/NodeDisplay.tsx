@@ -44,7 +44,7 @@ export function NodeDisplay({
             </span>
           </div>
           {node.location && (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-gray-300 font-medium">
               📍 {node.location}
             </p>
           )}
@@ -53,8 +53,10 @@ export function NodeDisplay({
 
       {/* Description */}
       <div className="prose prose-invert max-w-none">
-        <div className="p-6 bg-card border border-border rounded-lg whitespace-pre-wrap">
-          {node.description}
+        <div className="p-6 bg-card border-2 border-border rounded-lg whitespace-pre-wrap shadow-lg">
+          <p className="text-base leading-relaxed text-gray-200">
+            {node.description}
+          </p>
         </div>
       </div>
 

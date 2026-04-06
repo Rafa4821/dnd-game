@@ -4,8 +4,14 @@ import { PregenSelection } from './PregenSelection'
 import { CharacterCustomization } from './CharacterCustomization'
 import { CharacterReview } from './CharacterReview'
 
+interface CharacterData {
+  pregenId: string | null
+  name: string
+  customizations: Record<string, unknown> | null
+}
+
 interface CharacterWizardProps {
-  onComplete: (characterData: any) => void
+  onComplete: (characterData: CharacterData) => void
   onCancel: () => void
 }
 
@@ -15,7 +21,7 @@ export function CharacterWizard({ onComplete, onCancel }: CharacterWizardProps) 
   const [step, setStep] = useState<WizardStep>('selection')
   const [selectedPregenId, setSelectedPregenId] = useState<string | null>(null)
   const [characterName, setCharacterName] = useState('')
-  const [customizations, setCustomizations] = useState<any>(null)
+  const [customizations, setCustomizations] = useState<Record<string, unknown> | null>(null)
 
   const handlePregenSelect = (pregenId: string) => {
     setSelectedPregenId(pregenId)
@@ -66,13 +72,13 @@ export function CharacterWizard({ onComplete, onCancel }: CharacterWizardProps) 
           </div>
           
           <div className="flex justify-between mt-2 text-sm">
-            <span className={step === 'selection' ? 'text-primary font-medium' : 'text-muted-foreground'}>
+            <span className={step === 'selection' ? 'text-primary font-bold' : 'text-gray-400 font-medium'}>
               1. Selección
             </span>
-            <span className={step === 'customization' ? 'text-primary font-medium' : 'text-muted-foreground'}>
+            <span className={step === 'customization' ? 'text-primary font-bold' : 'text-gray-400 font-medium'}>
               2. Personalización
             </span>
-            <span className={step === 'review' ? 'text-primary font-medium' : 'text-muted-foreground'}>
+            <span className={step === 'review' ? 'text-primary font-bold' : 'text-gray-400 font-medium'}>
               3. Revisión
             </span>
           </div>

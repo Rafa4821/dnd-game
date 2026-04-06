@@ -86,7 +86,7 @@ export default function CampaignPage() {
       <div className="min-h-screen flex items-center justify-center gothic-theme">
         <div className="text-center">
           <Moon className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">Cargando campaña...</p>
+          <p className="text-gray-300 font-medium">Cargando campaña...</p>
         </div>
       </div>
     )
@@ -125,8 +125,8 @@ export default function CampaignPage() {
               <div className="flex items-center gap-3">
                 <Moon className="w-8 h-8 text-primary" />
                 <div>
-                  <h1 className="text-xl font-bold">Sangrebruma</h1>
-                  <p className="text-sm text-muted-foreground">
+                  <h1 className="text-xl font-bold text-foreground">Sangrebruma</h1>
+                  <p className="text-sm text-gray-400 font-mono font-semibold">
                     {currentSession?.code || 'Campaña'}
                   </p>
                 </div>
@@ -136,16 +136,16 @@ export default function CampaignPage() {
             {/* Variables del juego */}
             <div className="flex items-center gap-6 text-sm">
               <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">🌑 Oscuridad:</span>
-                <span className="font-bold">{progress.variables.darkness || 0}/6</span>
+                <span className="text-gray-400 font-medium"> Oscuridad:</span>
+                <span className="font-bold text-foreground">{progress.variables.darkness}/6</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">🩸 Deuda:</span>
-                <span className="font-bold">{progress.variables.bloodDebt || 0}/3</span>
+                <span className="text-gray-400 font-medium"> Deuda:</span>
+                <span className="font-bold text-foreground">{progress.variables.bloodDebt}/3</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">📜 Acto:</span>
-                <span className="font-bold">{progress.variables.act || 1}/3</span>
+                <span className="text-gray-400 font-medium"> Acto:</span>
+                <span className="font-bold text-foreground">{progress.variables.act}/3</span>
               </div>
               
               <button

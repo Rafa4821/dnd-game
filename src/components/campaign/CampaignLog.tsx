@@ -15,9 +15,9 @@ export function CampaignLog() {
 
   if (!progress || progress.logs.length === 0) {
     return (
-      <div className="p-6 text-center text-muted-foreground">
-        <ScrollText className="w-12 h-12 mx-auto mb-3 opacity-50" />
-        <p>No hay entradas en el log aún</p>
+      <div className="p-6 text-center text-gray-400">
+        <ScrollText className="w-12 h-12 mx-auto mb-3 opacity-40" />
+        <p className="font-medium">No hay entradas en el log aún</p>
       </div>
     )
   }
@@ -34,13 +34,13 @@ export function CampaignLog() {
         return (
           <div 
             key={log.id}
-            className="p-3 bg-muted/30 border border-border rounded-lg hover:bg-muted/50 transition-colors"
+            className="p-3 bg-card border border-border rounded-lg hover:bg-primary/5 hover:border-primary/30 transition-all"
           >
             <div className="flex items-start gap-3">
-              <Icon className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+              <Icon className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm">{log.content}</p>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-sm text-gray-200 leading-relaxed">{log.content}</p>
+                <p className="text-xs text-gray-500 mt-1 font-mono">
                   {date.toLocaleTimeString()}
                 </p>
               </div>
