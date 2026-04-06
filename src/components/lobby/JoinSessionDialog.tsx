@@ -33,7 +33,7 @@ export function JoinSessionDialog({ open, onClose }: JoinSessionDialogProps) {
     }
 
     try {
-      await joinSession(
+      const sessionId = await joinSession(
         {
           code: code.toUpperCase(),
           displayName: user.displayName,
@@ -41,12 +41,8 @@ export function JoinSessionDialog({ open, onClose }: JoinSessionDialogProps) {
         user.uid
       )
       
-      // Buscar la sesión por código para obtener el ID
-      // (joinSession no retorna el ID, así que lo hacemos después)
-      // Alternativa: modificar joinSession para que retorne sessionId
-      
-      // Por ahora, navegamos al lobby y dejamos que el usuario vea sus salas
-      navigate('/lobby')
+      // Navegar directamente a la sesión
+      navigate(`/session/${sessionId}`)
       onClose()
       
     } catch (err) {

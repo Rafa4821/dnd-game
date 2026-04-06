@@ -67,7 +67,7 @@ export default function SessionPage() {
   }
 
   // Crear personaje
-  const handleCreateCharacter = async (characterData: any) => {
+  const handleCreateCharacter = async (characterData: { name: string; pregenId: string }) => {
     if (!user?.uid || !currentSession) return
     
     try {
@@ -211,19 +211,19 @@ export default function SessionPage() {
                     {/* Info */}
                     <div>
                       <div className="flex items-center gap-2">
-                        <p className="font-semibold">{player.displayName}</p>
+                        <p className="font-semibold text-foreground">{player.displayName}</p>
                         {player.uid === currentSession.ownerId && (
-                          <span className="px-2 py-0.5 text-xs bg-primary/20 text-primary rounded">
+                          <span className="px-2 py-0.5 text-xs bg-primary text-primary-foreground font-semibold rounded">
                             Anfitrión
                           </span>
                         )}
                       </div>
                       {player.character ? (
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-gray-300">
                           {player.character.name} - {player.character.class} Nv. {player.character.level}
                         </p>
                       ) : (
-                        <p className="text-sm text-muted-foreground italic">
+                        <p className="text-sm text-gray-400 italic">
                           Sin personaje
                         </p>
                       )}
@@ -239,11 +239,11 @@ export default function SessionPage() {
                     )}
                     
                     {player.ready ? (
-                      <span className="px-3 py-1 bg-green-500/20 text-green-500 text-sm font-medium rounded">
+                      <span className="px-3 py-1 bg-green-500 text-white text-sm font-semibold rounded">
                         Listo
                       </span>
                     ) : (
-                      <span className="px-3 py-1 bg-yellow-500/20 text-yellow-500 text-sm font-medium rounded">
+                      <span className="px-3 py-1 bg-yellow-500 text-gray-900 text-sm font-semibold rounded">
                         Esperando
                       </span>
                     )}
@@ -259,7 +259,7 @@ export default function SessionPage() {
 
             {/* Estado actual */}
             <div className="p-4 bg-card border border-border rounded-lg space-y-3">
-              <h3 className="font-semibold">Tu Estado</h3>
+              <h3 className="font-semibold text-foreground">Tu Estado</h3>
               
               {!currentPlayer?.character && (
                 <button 
@@ -287,7 +287,7 @@ export default function SessionPage() {
             {/* Iniciar partida (solo owner) */}
             {isOwner && (
               <div className="p-4 bg-card border border-border rounded-lg space-y-3">
-                <h3 className="font-semibold">Control de Partida</h3>
+                <h3 className="font-semibold text-foreground">Control de Partida</h3>
                 
                 <button
                   disabled={!allReady}
@@ -298,7 +298,7 @@ export default function SessionPage() {
                 </button>
 
                 {!allReady && (
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-gray-400">
                     Todos deben tener personaje y estar listos
                   </p>
                 )}
@@ -307,8 +307,8 @@ export default function SessionPage() {
 
             {/* Info de campaña */}
             <div className="p-4 bg-card border border-border rounded-lg space-y-2">
-              <h3 className="font-semibold">Campaña: Sangrebruma</h3>
-              <div className="text-sm text-muted-foreground space-y-1">
+              <h3 className="font-semibold text-foreground">Campaña: Sangrebruma</h3>
+              <div className="text-sm text-gray-300 space-y-1">
                 <p>📍 Nodo: {currentSession.campaign.currentNodeId}</p>
                 <p>🌑 Oscuridad: {currentSession.campaign.variables.darkness}/6</p>
                 <p>🩸 Deuda: {currentSession.campaign.variables.bloodDebt}/3</p>

@@ -23,7 +23,7 @@ interface SessionState {
   
   // Actions
   createSession: (input: CreateSessionInput, userId: string) => Promise<string>
-  joinSession: (input: JoinSessionInput, userId: string) => Promise<void>
+  joinSession: (input: JoinSessionInput, userId: string) => Promise<string>
   leaveSession: (userId: string) => Promise<void>
   updatePlayerReady: (userId: string, ready: boolean) => Promise<void>
   startSession: () => Promise<void>
@@ -150,7 +150,8 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       
       // Agregar jugador
       const now = Date.now()
-      await updateDoc(doc(db, 'sessions', sessionDoc.id), {
+      const sessionId = sessionDoc.id
+      await updateDoc(doc(db, 'sessions', sessionId), {
         [`players.${userId}`]: {
           uid: userId,
           displayName: input.displayName,
@@ -164,7 +165,10 @@ export const useSessionStore = create<SessionState>((set, get) => ({
         updatedAt: now,
       })
       
+      console.log('Successfully joined session:', sessionId)
       set({ loading: false })
+      
+      return sessionId
       
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Error al unirse'
