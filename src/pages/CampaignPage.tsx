@@ -9,7 +9,7 @@ import { Moon, BookOpen, ScrollText, ArrowLeft } from 'lucide-react'
 export default function CampaignPage() {
   const { sessionId } = useParams<{ sessionId: string }>()
   const navigate = useNavigate()
-  const { currentSession } = useSessionStore()
+  const { currentSession, initializeVoting } = useSessionStore()
   const { 
     currentNode, 
     progress, 
@@ -31,6 +31,17 @@ export default function CampaignPage() {
 
     loadProgress(sessionId)
   }, [sessionId, loadProgress, navigate])
+
+  // Inicializar votación cuando aparezca nodo de decisión
+  useEffect(() => {
+    if (!currentNode || currentNode.type !== 'decision') return
+    
+    // Solo inicializar si no hay votingState o es de otro nodo
+    const votingState = currentSession?.campaign.votingState
+    if (!votingState || votingState.nodeId !== currentNode.id) {
+      initializeVoting(currentNode.id)
+    }
+  }, [currentNode, currentSession?.campaign.votingState, initializeVoting])
 
   const handleContinue = () => {
     if (currentNode?.nextNodeId) {

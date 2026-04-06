@@ -42,6 +42,28 @@ export const SessionPlayer = z.object({
 
 export type SessionPlayer = z.infer<typeof SessionPlayer>
 
+// Voto de jugador en decisión
+export const PlayerVote = z.object({
+  playerId: z.string(),
+  playerName: z.string(),
+  optionId: z.string(),
+  timestamp: z.number(),
+})
+
+export type PlayerVote = z.infer<typeof PlayerVote>
+
+// Estado de votación activa
+export const VotingState = z.object({
+  nodeId: z.string(),
+  votes: z.record(PlayerVote), // Indexed by playerId
+  startedAt: z.number(),
+  resolvedAt: z.number().nullable(),
+  resolvedOption: z.string().nullable(),
+  tiebreaker: z.boolean().default(false), // Si se usó dado para desempate
+})
+
+export type VotingState = z.infer<typeof VotingState>
+
 // Configuración de campaña
 export const CampaignConfig = z.object({
   id: z.string(),
@@ -49,6 +71,7 @@ export const CampaignConfig = z.object({
   currentNodeId: z.string().nullable(),
   flags: z.record(z.boolean()),       // f_village_trust, etc.
   variables: z.record(z.number()),    // darkness, bloodDebt, etc.
+  votingState: VotingState.nullable(), // Estado de votación activa
 })
 
 export type CampaignConfig = z.infer<typeof CampaignConfig>

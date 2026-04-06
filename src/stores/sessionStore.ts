@@ -29,6 +29,9 @@ interface SessionState {
   startSession: () => Promise<void>
   subscribeToSession: (sessionId: string) => () => void
   clearSession: () => void
+  castVote: (optionId: string, playerId: string, playerName: string) => Promise<void>
+  initializeVoting: (nodeId: string) => Promise<void>
+  resolveVoting: (optionId: string, tiebreaker: boolean) => Promise<void>
   readSession: (sessionId: string) => Promise<Session | null>
   updateSession: (sessionId: string, updates: Partial<Omit<Session, 'id' | 'code' | 'ownerId' | 'createdAt'>>) => Promise<void>
   deleteSession: (sessionId: string) => Promise<void>
@@ -97,7 +100,9 @@ export const useSessionStore = create<SessionState>((set, get) => ({
             act: 1,
             partySize: 1,
           },
+          votingState: null,
         },
+        id: sessionId,
         createdAt: now,
         updatedAt: now,
         startedAt: null,
@@ -363,5 +368,69 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   // Limpiar sesión actual
   clearSession: () => {
     set({ currentSession: null, error: null })
+  },
+
+  // Inicializar votación para un nodo de decisión
+  initializeVoting: async (nodeId) => {
+    try {
+      const session = get().currentSession
+      if (!session) return
+
+      const votingState = {
+        nodeId,
+        votes: {},
+        startedAt: Date.now(),
+        resolvedAt: null,
+        resolvedOption: null,
+        tiebreaker: false,
+      }
+
+      await updateDoc(doc(db, 'sessions', session.id), {
+        'campaign.votingState': votingState,
+        updatedAt: Date.now(),
+      })
+    } catch (error) {
+      console.error('Error initializing voting:', error)
+    }
+  },
+
+  // Registrar voto de jugador
+  castVote: async (optionId, playerId, playerName) => {
+    try {
+      const session = get().currentSession
+      if (!session || !session.campaign.votingState) return
+
+      const vote = {
+        playerId,
+        playerName,
+        optionId,
+        timestamp: Date.now(),
+      }
+
+      await updateDoc(doc(db, 'sessions', session.id), {
+        [`campaign.votingState.votes.${playerId}`]: vote,
+        updatedAt: Date.now(),
+      })
+    } catch (error) {
+      console.error('Error casting vote:', error)
+      throw error
+    }
+  },
+
+  // Resolver votación
+  resolveVoting: async (optionId, tiebreaker = false) => {
+    try {
+      const session = get().currentSession
+      if (!session) return
+
+      await updateDoc(doc(db, 'sessions', session.id), {
+        'campaign.votingState.resolvedAt': Date.now(),
+        'campaign.votingState.resolvedOption': optionId,
+        'campaign.votingState.tiebreaker': tiebreaker,
+        updatedAt: Date.now(),
+      })
+    } catch (error) {
+      console.error('Error resolving voting:', error)
+    }
   },
 }))
