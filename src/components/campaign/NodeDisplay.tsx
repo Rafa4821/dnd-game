@@ -1,0 +1,86 @@
+import type { CampaignNode } from '@/types/campaign'
+import { Book, Swords, CheckCircle, MessageCircle, Moon } from 'lucide-react'
+import { DecisionNode } from './DecisionNode'
+import { CheckNode } from './CheckNode'
+import { CombatNode } from './CombatNode'
+
+interface NodeDisplayProps {
+  node: CampaignNode
+  onContinue?: () => void
+  onDecision?: (optionId: string) => void
+  onCheck?: (success: boolean) => void
+  onCombatEnd?: () => void
+}
+
+const NODE_ICONS = {
+  narrative: Book,
+  decision: MessageCircle,
+  check: CheckCircle,
+  combat: Swords,
+  rest: Moon,
+}
+
+export function NodeDisplay({ 
+  node, 
+  onContinue, 
+  onDecision,
+  onCheck,
+  onCombatEnd 
+}: NodeDisplayProps) {
+  const Icon = NODE_ICONS[node.type]
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-start gap-4">
+        <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center flex-shrink-0">
+          <Icon className="w-6 h-6 text-primary" />
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-2">
+            <h2 className="text-2xl font-bold">{node.title}</h2>
+            <span className="px-2 py-1 text-xs bg-secondary rounded">
+              Acto {node.act}
+            </span>
+          </div>
+          {node.location && (
+            <p className="text-sm text-muted-foreground">
+              📍 {node.location}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Description */}
+      <div className="prose prose-invert max-w-none">
+        <div className="p-6 bg-card border border-border rounded-lg whitespace-pre-wrap">
+          {node.description}
+        </div>
+      </div>
+
+      {/* Node-specific content */}
+      {node.type === 'narrative' && (
+        <div className="flex justify-end">
+          <button
+            onClick={onContinue}
+            className="px-6 py-3 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Continuar →
+          </button>
+        </div>
+      )}
+
+      {node.type === 'decision' && node.options && (
+        <DecisionNode options={node.options} onSelect={onDecision} />
+      )}
+
+      {node.type === 'check' && node.check && (
+        <CheckNode check={node.check} onResult={onCheck} />
+      )}
+
+      {node.type === 'combat' && (
+        <CombatNode encounterId={node.encounterId!} onCombatEnd={onCombatEnd} />
+      )}
+    </div>
+  )
+}

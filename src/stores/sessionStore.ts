@@ -1,0 +1,363 @@
+import { create } from 'zustand'
+import { 
+  collection, 
+  doc, 
+  setDoc, 
+  updateDoc, 
+  onSnapshot, 
+  Timestamp,
+  query,
+  where,
+  getDocs,
+  getDoc,
+  deleteDoc,
+} from 'firebase/firestore'
+import { db } from '@/lib/firebase'
+import { generateRoomCode } from '@/lib/utils'
+import type { Session, CreateSessionInput, JoinSessionInput } from '@/types/session'
+
+interface SessionState {
+  currentSession: Session | null
+  loading: boolean
+  error: string | null
+  
+  // Actions
+  createSession: (input: CreateSessionInput, userId: string) => Promise<string>
+  joinSession: (input: JoinSessionInput, userId: string) => Promise<void>
+  leaveSession: (userId: string) => Promise<void>
+  updatePlayerReady: (userId: string, ready: boolean) => Promise<void>
+  startSession: () => Promise<void>
+  subscribeToSession: (sessionId: string) => () => void
+  clearSession: () => void
+  readSession: (sessionId: string) => Promise<Session | null>
+  updateSession: (sessionId: string, updates: Partial<Omit<Session, 'id' | 'code' | 'ownerId' | 'createdAt'>>) => Promise<void>
+  deleteSession: (sessionId: string) => Promise<void>
+}
+
+export const useSessionStore = create<SessionState>((set, get) => ({
+  currentSession: null,
+  loading: false,
+  error: null,
+
+  // Crear nueva sesión
+  createSession: async (input, userId) => {
+    try {
+      set({ loading: true, error: null })
+      
+      // Generar código único de sala
+      let code = generateRoomCode()
+      let attempts = 0
+      const maxAttempts = 10
+      
+      // Verificar que el código no exista
+      while (attempts < maxAttempts) {
+        const q = query(
+          collection(db, 'sessions'),
+          where('code', '==', code)
+        )
+        const snapshot = await getDocs(q)
+        
+        if (snapshot.empty) break
+        code = generateRoomCode()
+        attempts++
+      }
+      
+      if (attempts === maxAttempts) {
+        throw new Error('No se pudo generar un código único')
+      }
+      
+      const sessionId = doc(collection(db, 'sessions')).id
+      const now = Date.now()
+      
+      const sessionData = {
+        code,
+        ownerId: userId,
+        ownerName: input.ownerName,
+        players: {
+          [userId]: {
+            uid: userId,
+            displayName: input.ownerName,
+            character: null,
+            ready: false,
+            isOnline: true,
+            joinedAt: now,
+          },
+        },
+        playerIds: [userId],
+        maxPlayers: input.maxPlayers,
+        status: 'waiting',
+        campaign: {
+          id: input.campaignId,
+          name: 'Sangrebruma',
+          currentNodeId: 'SB-N_START',
+          flags: {},
+          variables: {
+            darkness: 0,
+            bloodDebt: 0,
+            act: 1,
+            partySize: 1,
+          },
+        },
+        createdAt: now,
+        updatedAt: now,
+        startedAt: null,
+      }
+      
+      await setDoc(doc(db, 'sessions', sessionId), sessionData)
+      
+      set({ loading: false })
+      return sessionId
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Error al crear sesión'
+      set({ error: errorMessage, loading: false })
+      console.error('Error creating session:', error)
+      throw error
+    }
+  },
+
+  // Unirse a sesión existente
+  joinSession: async (input, userId) => {
+    try {
+      set({ loading: true, error: null })
+      
+      // Buscar sesión por código
+      const q = query(
+        collection(db, 'sessions'),
+        where('code', '==', input.code.toUpperCase())
+      )
+      const snapshot = await getDocs(q)
+      
+      if (snapshot.empty) {
+        throw new Error('Sala no encontrada')
+      }
+      
+      const sessionDoc = snapshot.docs[0]
+      const session = sessionDoc.data() as Session
+      
+      // Validaciones
+      if (session.status !== 'waiting') {
+        throw new Error('La sala ya comenzó o está completa')
+      }
+      
+      if (session.playerIds.includes(userId)) {
+        throw new Error('Ya estás en esta sala')
+      }
+      
+      if (session.playerIds.length >= session.maxPlayers) {
+        throw new Error('La sala está llena')
+      }
+      
+      // Agregar jugador
+      const now = Date.now()
+      await updateDoc(doc(db, 'sessions', sessionDoc.id), {
+        [`players.${userId}`]: {
+          uid: userId,
+          displayName: input.displayName,
+          character: null,
+          ready: false,
+          isOnline: true,
+          joinedAt: now,
+        },
+        playerIds: [...session.playerIds, userId],
+        'campaign.variables.partySize': session.playerIds.length + 1,
+        updatedAt: now,
+      })
+      
+      set({ loading: false })
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Error al unirse'
+      set({ error: errorMessage, loading: false })
+      console.error('Error joining session:', error)
+      throw error
+    }
+  },
+
+  // Salir de sesión
+  leaveSession: async (userId) => {
+    try {
+      const session = get().currentSession
+      if (!session) return
+      
+      const playerIds = session.playerIds.filter(id => id !== userId)
+      
+      // Si el owner se va, eliminar la sesión (o transferir ownership)
+      if (session.ownerId === userId && playerIds.length === 0) {
+        // TODO: Eliminar sesión completa
+        set({ currentSession: null })
+        return
+      }
+      
+      // Remover jugador
+      await updateDoc(doc(db, 'sessions', session.id), {
+        [`players.${userId}`]: null,
+        playerIds,
+        'campaign.variables.partySize': playerIds.length,
+        updatedAt: Date.now(),
+      })
+      
+      set({ currentSession: null })
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Error al salir'
+      set({ error: errorMessage })
+      console.error('Error leaving session:', error)
+    }
+  },
+
+  // Actualizar estado "listo"
+  updatePlayerReady: async (userId, ready) => {
+    try {
+      const session = get().currentSession
+      if (!session) return
+      
+      await updateDoc(doc(db, 'sessions', session.id), {
+        [`players.${userId}.ready`]: ready,
+        updatedAt: Date.now(),
+      })
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Error al actualizar'
+      set({ error: errorMessage })
+      console.error('Error updating ready:', error)
+    }
+  },
+
+  // Iniciar sesión
+  startSession: async () => {
+    try {
+      const session = get().currentSession
+      if (!session) return
+      
+      // Validar que todos tengan personaje y estén listos
+      const allReady = Object.values(session.players).every(
+        p => p.character !== null && p.ready
+      )
+      
+      if (!allReady) {
+        throw new Error('Todos los jugadores deben tener personaje y estar listos')
+      }
+      
+      await updateDoc(doc(db, 'sessions', session.id), {
+        status: 'playing',
+        startedAt: Date.now(),
+        updatedAt: Date.now(),
+      })
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Error al iniciar'
+      set({ error: errorMessage })
+      console.error('Error starting session:', error)
+      throw error
+    }
+  },
+
+  /**
+   * READ - Leer sesión por ID
+   */
+  readSession: async (sessionId) => {
+    try {
+      set({ loading: true, error: null })
+      
+      const sessionRef = doc(db, 'sessions', sessionId)
+      const sessionSnap = await getDoc(sessionRef)
+      
+      if (sessionSnap.exists()) {
+        const session = sessionSnap.data() as Session
+        set({ currentSession: session, loading: false })
+        return session
+      }
+      
+      set({ loading: false })
+      return null
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Error al leer sesión'
+      set({ error: errorMessage, loading: false })
+      console.error('Error reading session:', error)
+      return null
+    }
+  },
+
+  /**
+   * UPDATE - Actualizar sesión
+   */
+  updateSession: async (sessionId, updates) => {
+    try {
+      set({ loading: true, error: null })
+      
+      const sessionRef = doc(db, 'sessions', sessionId)
+      await updateDoc(sessionRef, {
+        ...updates,
+        updatedAt: Date.now(),
+      })
+      
+      set({ loading: false })
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Error al actualizar sesión'
+      set({ error: errorMessage, loading: false })
+      console.error('Error updating session:', error)
+      throw error
+    }
+  },
+
+  /**
+   * DELETE - Eliminar sesión
+   */
+  deleteSession: async (sessionId) => {
+    try {
+      set({ loading: true, error: null })
+      
+      const sessionRef = doc(db, 'sessions', sessionId)
+      await deleteDoc(sessionRef)
+      
+      set({ currentSession: null, loading: false })
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Error al eliminar sesión'
+      set({ error: errorMessage, loading: false })
+      console.error('Error deleting session:', error)
+      throw error
+    }
+  },
+
+  // Suscribirse a cambios de sesión
+  subscribeToSession: (sessionId) => {
+    const unsubscribe = onSnapshot(
+      doc(db, 'sessions', sessionId),
+      (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.data()
+          const session: Session = {
+            id: snapshot.id,
+            ...data,
+            // Convertir Timestamps a números
+            createdAt: data.createdAt instanceof Timestamp 
+              ? data.createdAt.toMillis() 
+              : data.createdAt,
+            updatedAt: data.updatedAt instanceof Timestamp 
+              ? data.updatedAt.toMillis() 
+              : data.updatedAt,
+            startedAt: data.startedAt instanceof Timestamp 
+              ? data.startedAt.toMillis() 
+              : data.startedAt,
+          } as Session
+          
+          set({ currentSession: session, loading: false })
+        } else {
+          set({ currentSession: null, loading: false })
+        }
+      },
+      (error) => {
+        console.error('Error in session subscription:', error)
+        set({ error: error.message, loading: false })
+      }
+    )
+    
+    return unsubscribe
+  },
+
+  // Limpiar sesión actual
+  clearSession: () => {
+    set({ currentSession: null, error: null })
+  },
+}))

@@ -1,0 +1,105 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Sesiones de juego
+    match /sessions/{sessionId} {
+      // Lectura: cualquier usuario autenticado
+      allow read: if isAuthenticated();
+      
+      // Crear: cualquier usuario autenticado
+      allow create: if isAuthenticated();
+      
+      // Actualizar: cualquier usuario autenticado
+      allow update: if isAuthenticated();
+      
+      // Eliminar: cualquier usuario autenticado
+      allow delete: if isAuthenticated();
+      
+      // Logs de sesión (append-only)
+      match /logs/{logId} {
+        allow read: if isAuthenticated() && 
+                       request.auth.uid in get(/databases/$(database)/documents/sessions/$(sessionId)).data.playerIds;
+        allow create: if isAuthenticated() && 
+                         request.auth.uid in get(/databases/$(database)/documents/sessions/$(sessionId)).data.playerIds;
+      }
+      
+      // Progreso de campaña
+      match /campaign/{campaignDoc} {
+        allow read, write: if isAuthenticated() && 
+                              request.auth.uid in get(/databases/$(database)/documents/sessions/$(sessionId)).data.playerIds;
+      }
+      
+      // Estado de combate
+      match /combat/{combatId} {
+        allow read, write: if isAuthenticated() && 
+                              request.auth.uid in get(/databases/$(database)/documents/sessions/$(sessionId)).data.playerIds;
+      }
+    }
+    
+    // Perfiles de usuario
+    match /profiles/{userId} {
+      // Lectura: el propio usuario o si el perfil es público
+      allow read: if isAuthenticated() && 
+                     (request.auth.uid == userId || 
+                      resource.data.publicProfile == true);
+      
+      // Crear: cualquier usuario autenticado puede crear su propio perfil
+      allow create: if isAuthenticated() && 
+                       request.auth.uid == userId;
+      
+      // Actualizar: solo el propio usuario
+      allow update: if isAuthenticated() && 
+                       request.auth.uid == userId;
+      
+      // Eliminar: solo el propio usuario
+      allow delete: if isAuthenticated() && 
+                       request.auth.uid == userId;
+    }
+    
+    // Personajes de jugador
+    match /characters/{characterId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && 
+                       request.auth.uid == request.resource.data.ownerId;
+      allow update, delete: if isAuthenticated() && 
+                               request.auth.uid == resource.data.ownerId;
+    }
+    
+    // Campañas (solo lectura para todos los autenticados)
+    match /campaigns/{campaignId} {
+      allow read: if isAuthenticated();
+      
+      match /nodes/{nodeId} {
+        allow read: if isAuthenticated();
+      }
+      
+      match /encounters/{encounterId} {
+        allow read: if isAuthenticated();
+      }
+      
+      match /enemies/{enemyId} {
+        allow read: if isAuthenticated();
+      }
+      
+      match /pregens/{pregenId} {
+        allow read: if isAuthenticated();
+      }
+    }
+    
+    // Bloquear acceso por defecto
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

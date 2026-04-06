@@ -1,0 +1,23 @@
+{"users": [
+{
+  "localId": "QamvTsu7TQPrWnWjMThF7gfXNrJ2",
+  "email": "rafaellucero998@gmail.com",
+  "emailVerified": false,
+  "passwordHash": "LjBwdtkdjN6Jjp6rQ9waA2hf8czV+x6lpua2ttlPL9b42f+642NhdSinz2aVWNLqE9uq+ToXffJzw4NTsyiyaA==",
+  "salt": "EGWsFqwNLg+lSw==",
+  "displayName": "Rafael the great",
+  "lastSignedInAt": "1775435299599",
+  "createdAt": "1775435299599",
+  "providerUserInfo": []
+},
+{
+  "localId": "ukv4IVSg2jXL1W59YjR9SMUJPo72",
+  "email": "test@sangrebruma.com",
+  "emailVerified": false,
+  "passwordHash": "TvLAHQeJEGbsPbEq/rjPmD4hhYhZ1d+bGixGe9BHF9gRwSmslMmJjq9z5Pw+aGqINazgxxO/7PKsnq5wHrmgiw==",
+  "salt": "SqABD9NnVIcICg==",
+  "displayName": "rafael",
+  "lastSignedInAt": "1775435509911",
+  "createdAt": "1775435509911",
+  "providerUserInfo": []
+}]}
