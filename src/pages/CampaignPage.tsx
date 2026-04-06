@@ -34,14 +34,24 @@ export default function CampaignPage() {
 
   // Inicializar votación cuando aparezca nodo de decisión
   useEffect(() => {
-    if (!currentNode || currentNode.type !== 'decision') return
+    if (!currentNode || currentNode.type !== 'decision') {
+      console.log('⏭️ No es nodo de decisión o no hay nodo')
+      return
+    }
+    
+    console.log('🎯 Nodo de decisión detectado:', currentNode.id)
     
     // Solo inicializar si no hay votingState o es de otro nodo
-    const votingState = currentSession?.campaign.votingState
+    const votingState = currentSession?.campaign?.votingState
+    console.log('📊 Estado de votación actual:', votingState)
+    
     if (!votingState || votingState.nodeId !== currentNode.id) {
+      console.log('🔄 Inicializando nueva votación...')
       initializeVoting(currentNode.id)
+    } else {
+      console.log('✅ Votación ya inicializada para este nodo')
     }
-  }, [currentNode, currentSession?.campaign.votingState, initializeVoting])
+  }, [currentNode, currentSession?.campaign?.votingState, initializeVoting])
 
   const handleContinue = () => {
     if (currentNode?.nextNodeId) {

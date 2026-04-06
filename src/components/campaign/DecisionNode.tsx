@@ -28,20 +28,49 @@ export function DecisionNode({ options, onSelect }: DecisionNodeProps) {
   const [showTiebreaker, setShowTiebreaker] = useState(false)
   const [tiebreakerResult, setTiebreakerResult] = useState<string | null>(null)
   
-  const votingState = currentSession?.campaign.votingState
-  const myVote = user?.uid ? votingState?.votes[user.uid] : null
+  const votingState = currentSession?.campaign?.votingState
+  const myVote = user?.uid ? votingState?.votes?.[user.uid] : null
   const allPlayers = Object.values(currentSession?.players || {})
   const totalPlayers = allPlayers.length
   const votesCount = Object.keys(votingState?.votes || {}).length
   const allVoted = votesCount === totalPlayers && totalPlayers > 0
+  
+  // Debug logging
+  useEffect(() => {
+    console.log('🎮 DecisionNode estado:', {
+      votingState,
+      myVote,
+      totalPlayers,
+      votesCount,
+      allVoted,
+      userId: user?.uid,
+    })
+  }, [votingState, myVote, totalPlayers, votesCount, allVoted, user?.uid])
 
   const handleSelect = async (option: DecisionOption) => {
+    console.log('👆 Click en opción:', option.text)
+    
     if (!meetsRequirements(option.requirements, progress?.flags || {})) {
+      console.log('❌ No cumple requisitos')
       return
     }
     
-    if (!user?.uid || !currentSession || myVote) return
+    if (!user?.uid) {
+      console.log('❌ No hay usuario')
+      return
+    }
     
+    if (!currentSession) {
+      console.log('❌ No hay sesión')
+      return
+    }
+    
+    if (myVote) {
+      console.log('❌ Ya votaste')
+      return
+    }
+    
+    console.log('✅ Registrando voto...')
     // Registrar voto en Firebase
     await castVote(option.id, user.uid, user.displayName || 'Jugador')
   }

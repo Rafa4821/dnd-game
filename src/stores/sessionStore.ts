@@ -336,6 +336,11 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.data()
+          
+          console.log('🔄 Firebase snapshot actualizado:')
+          console.log('  - votingState:', JSON.stringify(data.campaign?.votingState, null, 2))
+          console.log('  - campaign:', JSON.stringify(data.campaign, null, 2))
+          
           const session: Session = {
             id: snapshot.id,
             ...data,
@@ -350,6 +355,9 @@ export const useSessionStore = create<SessionState>((set, get) => ({
               ? data.startedAt.toMillis() 
               : data.startedAt,
           } as Session
+          
+          console.log('✅ Sesión actualizada en store:')
+          console.log('  - votingState:', JSON.stringify(session.campaign?.votingState, null, 2))
           
           set({ currentSession: session, loading: false })
         } else {
@@ -374,7 +382,13 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   initializeVoting: async (nodeId) => {
     try {
       const session = get().currentSession
-      if (!session) return
+      if (!session) {
+        console.log('❌ No session found')
+        return
+      }
+
+      console.log('🗳️ Inicializando votación para nodo:', nodeId)
+      console.log('📋 Session ID:', session.id)
 
       const votingState = {
         nodeId,
@@ -385,12 +399,33 @@ export const useSessionStore = create<SessionState>((set, get) => ({
         tiebreaker: false,
       }
 
-      await updateDoc(doc(db, 'sessions', session.id), {
-        'campaign.votingState': votingState,
+      console.log('📦 Datos a guardar:', votingState)
+
+      const docRef = doc(db, 'sessions', session.id)
+      
+      // Actualizar todo el objeto campaign con el nuevo votingState
+      const updatedCampaign = {
+        ...session.campaign,
+        votingState: votingState,
+      }
+      
+      console.log('📦 Campaign actualizado:', JSON.stringify(updatedCampaign, null, 2))
+      
+      // Usar setDoc con merge en lugar de updateDoc
+      await setDoc(docRef, {
+        campaign: updatedCampaign,
         updatedAt: Date.now(),
-      })
+      }, { merge: true })
+
+      console.log('✅ SetDoc con merge completado exitosamente')
     } catch (error) {
-      console.error('Error initializing voting:', error)
+      console.error('❌ Error initializing voting:', error)
+      console.error('❌ Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        code: error && typeof error === 'object' && 'code' in error ? error.code : undefined,
+        stack: error instanceof Error ? error.stack : undefined,
+      })
+      throw error
     }
   },
 
@@ -398,7 +433,17 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   castVote: async (optionId, playerId, playerName) => {
     try {
       const session = get().currentSession
-      if (!session || !session.campaign.votingState) return
+      if (!session) {
+        console.log('❌ No session found')
+        return
+      }
+      
+      if (!session.campaign?.votingState) {
+        console.log('❌ No voting state found, initializing...')
+        return
+      }
+
+      console.log('🗳️ Registrando voto:', { playerId, playerName, optionId })
 
       const vote = {
         playerId,
@@ -406,13 +451,27 @@ export const useSessionStore = create<SessionState>((set, get) => ({
         optionId,
         timestamp: Date.now(),
       }
+      
+      // Actualizar el campaign completo con el nuevo voto
+      const updatedCampaign = {
+        ...session.campaign,
+        votingState: {
+          ...session.campaign.votingState!,
+          votes: {
+            ...session.campaign.votingState!.votes,
+            [playerId]: vote,
+          },
+        },
+      }
 
       await updateDoc(doc(db, 'sessions', session.id), {
-        [`campaign.votingState.votes.${playerId}`]: vote,
+        campaign: updatedCampaign,
         updatedAt: Date.now(),
       })
+
+      console.log('✅ Voto registrado exitosamente')
     } catch (error) {
-      console.error('Error casting vote:', error)
+      console.error('❌ Error casting vote:', error)
       throw error
     }
   },
