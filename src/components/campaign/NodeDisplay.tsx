@@ -30,15 +30,15 @@ export function NodeDisplay({
   const Icon = NODE_ICONS[node.type]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex items-start gap-4">
-        <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center flex-shrink-0">
-          <Icon className="w-6 h-6 text-primary" />
+      <div className="flex items-start gap-3 sm:gap-4">
+        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-primary/20 flex items-center justify-center flex-shrink-0">
+          <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
-            <h2 className="text-2xl font-bold">{node.title}</h2>
+            <h2 className="text-xl sm:text-2xl font-bold">{node.title}</h2>
             <span className="px-2 py-1 text-xs bg-secondary rounded">
               Acto {node.act}
             </span>
@@ -53,7 +53,7 @@ export function NodeDisplay({
 
       {/* Description */}
       <div className="prose prose-invert max-w-none">
-        <div className="p-6 bg-card border-2 border-border rounded-lg whitespace-pre-wrap shadow-lg">
+        <div className="p-4 sm:p-6 bg-card border-2 border-border rounded-lg whitespace-pre-wrap shadow-lg">
           <p className="text-base leading-relaxed text-gray-200">
             {node.description}
           </p>

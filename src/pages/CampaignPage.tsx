@@ -111,10 +111,10 @@ export default function CampaignPage() {
   return (
     <div className="min-h-screen gothic-theme">
       {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+      <header className="border-b border-border bg-card/50 backdrop-blur sticky top-0 z-10 shadow-sm">
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+            <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
               <button
                 onClick={() => navigate(`/session/${sessionId}`)}
                 className="p-2 hover:bg-accent rounded-lg transition-colors"
@@ -122,10 +122,10 @@ export default function CampaignPage() {
                 <ArrowLeft className="w-5 h-5" />
               </button>
               
-              <div className="flex items-center gap-3">
-                <Moon className="w-8 h-8 text-primary" />
+              <div className="flex items-center gap-2 sm:gap-3">
+                <Moon className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                 <div>
-                  <h1 className="text-xl font-bold text-foreground">Sangrebruma</h1>
+                  <h1 className="text-lg sm:text-xl font-bold text-foreground">Sangrebruma</h1>
                   <p className="text-sm text-gray-400 font-mono font-semibold">
                     {currentSession?.code || 'Campaña'}
                   </p>
@@ -134,7 +134,7 @@ export default function CampaignPage() {
             </div>
 
             {/* Variables del juego */}
-            <div className="flex items-center gap-6 text-sm">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm w-full sm:w-auto">
               <div className="flex items-center gap-2">
                 <span className="text-gray-400 font-medium"> Oscuridad:</span>
                 <span className="font-bold text-foreground">{progress.variables.darkness}/6</span>
@@ -170,8 +170,8 @@ export default function CampaignPage() {
       </header>
 
       {/* Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
           {/* Nodo principal */}
           <div className="lg:col-span-2">
             <NodeDisplay

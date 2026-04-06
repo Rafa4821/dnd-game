@@ -52,11 +52,11 @@ export function CharacterWizard({ onComplete, onCancel }: CharacterWizardProps) 
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-4xl bg-card border border-border rounded-xl shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-sm">
+      <div className="w-full max-w-4xl max-h-[95vh] bg-card border border-border rounded-lg sm:rounded-xl shadow-2xl overflow-hidden flex flex-col">
         {/* Header con steps */}
-        <div className="border-b border-border bg-card/50 p-6">
-          <h2 className="text-2xl font-bold mb-4">Crear Personaje</h2>
+        <div className="border-b border-border bg-card/50 p-4 sm:p-6 flex-shrink-0">
+          <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Crear Personaje</h2>
           
           {/* Progress */}
           <div className="flex items-center gap-2">
@@ -85,7 +85,7 @@ export function CharacterWizard({ onComplete, onCancel }: CharacterWizardProps) 
         </div>
 
         {/* Content */}
-        <div className="p-6 max-h-[60vh] overflow-y-auto">
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1">
           {step === 'selection' && (
             <PregenSelection
               selectedId={selectedPregenId}

@@ -67,11 +67,11 @@ export function PhaserCombat({ combatState, onAction, onEndTurn }: PhaserCombatP
   }, [onAction, onEndTurn])
 
   return (
-    <div className="relative w-full h-full min-h-[600px] bg-gray-900 rounded-lg overflow-hidden border-2 border-primary/30">
+    <div className="relative w-full h-full min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] bg-gray-900 rounded-lg overflow-hidden border-2 border-primary/30">
       <div ref={containerRef} className="w-full h-full" />
       
       {/* Overlay de información */}
-      <div className="absolute top-4 right-4 bg-black/70 p-4 rounded-lg backdrop-blur-sm border border-primary/30">
+      <div className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-black/70 p-2 sm:p-4 rounded-lg backdrop-blur-sm border border-primary/30 text-xs sm:text-sm">
         <div className="text-white space-y-2">
           <div className="text-lg font-bold border-b border-primary/30 pb-2">
             Ronda {combatState.round}

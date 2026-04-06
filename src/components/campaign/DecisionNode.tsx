@@ -96,7 +96,7 @@ export function DecisionNode({ options, onSelect }: DecisionNodeProps) {
 
   if (showTiebreaker) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         <div className="text-center space-y-4">
           <h3 className="text-2xl font-bold text-yellow-500">¡Empate!</h3>
           <p className="text-gray-300">El destino decidirá vuestro camino...</p>
@@ -118,9 +118,9 @@ export function DecisionNode({ options, onSelect }: DecisionNodeProps) {
   
   return (
     <div className="space-y-4">
-      {/* Header con estado de votación */}
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-foreground">¿Qué hacéis?</h3>
+      {/* Header con contador */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+        <h3 className="text-lg sm:text-xl font-bold text-foreground">¿Qué hacéis?</h3>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 px-3 py-1 bg-card border border-border rounded-lg">
             <Users className="w-4 h-4 text-gray-400" />
@@ -149,7 +149,7 @@ export function DecisionNode({ options, onSelect }: DecisionNodeProps) {
               key={option.id}
               onClick={() => handleSelect(option)}
               disabled={!isAvailable || myVote !== null}
-              className={`relative p-4 border-2 rounded-lg text-left transition-all overflow-hidden ${
+              className={`relative p-3 sm:p-4 border-2 rounded-lg text-left transition-all overflow-hidden ${
                 hasMyVote
                   ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
                   : isAvailable

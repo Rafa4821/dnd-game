@@ -274,9 +274,9 @@ export function CombatArena({ sessionId, encounterId, onCombatEnd }: CombatArena
 
       {/* Vista Táctica 2D con Phaser */}
       {tacticalView && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
           {/* Phaser Canvas */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 order-1">
             <PhaserCombat
               combatState={combat}
               onAction={performAction}
@@ -285,7 +285,7 @@ export function CombatArena({ sessionId, encounterId, onCombatEnd }: CombatArena
           </div>
 
           {/* Sidebar con HUD y controles */}
-          <div className="space-y-4">
+          <div className="space-y-3 lg:space-y-4 order-2">
             {/* HUD de combatientes */}
             <CombatHUD
               combatants={combat.combatants}

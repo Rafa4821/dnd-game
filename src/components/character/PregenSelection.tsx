@@ -27,7 +27,7 @@ export function PregenSelection({ selectedId, onSelect }: PregenSelectionProps) 
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         {pregens.map((pregen) => {
           const Icon = CLASS_ICONS[pregen.class] || Shield
           const isSelected = selectedId === pregen.pregenId
@@ -36,7 +36,7 @@ export function PregenSelection({ selectedId, onSelect }: PregenSelectionProps) 
             <button
               key={pregen.pregenId}
               onClick={() => onSelect(pregen.pregenId!)}
-              className={`p-4 border-2 rounded-lg text-left transition-all hover:border-primary ${
+              className={`p-3 sm:p-4 border-2 rounded-lg text-left transition-all hover:border-primary ${
                 isSelected
                   ? 'border-primary bg-primary/5'
                   : 'border-border hover:bg-accent/50'
