@@ -2,7 +2,7 @@ import Phaser from 'phaser'
 import { GridSystem } from '../systems/GridSystem'
 import { EffectsSystem } from '../systems/EffectsSystem'
 import { ImprovedCombatantSprite } from '../entities/ImprovedCombatantSprite'
-import type { CombatState, Combatant } from '@/types/combat'
+import type { CombatState, Combatant, CombatActionType } from '@/types/combat'
 import { GRID_CONFIG } from '../config'
 
 export class TacticalCombatScene extends Phaser.Scene {
@@ -14,7 +14,7 @@ export class TacticalCombatScene extends Phaser.Scene {
   
   // Estado del combate (inyectado externamente)
   private combatState: CombatState | null = null
-  private onActionCallback: ((action: string, targetId?: string) => void) | null = null
+  private onActionCallback: ((action: CombatActionType, targetId?: string) => void | Promise<void>) | null = null
   private onEndTurnCallback: (() => void) | null = null
 
   constructor() {
@@ -171,7 +171,7 @@ export class TacticalCombatScene extends Phaser.Scene {
   }
 
   public setCallbacks(
-    onAction: (action: string, targetId?: string) => void,
+    onAction: (action: CombatActionType, targetId?: string) => void | Promise<void>,
     onEndTurn: () => void
   ): void {
     this.onActionCallback = onAction

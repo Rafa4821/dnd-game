@@ -87,8 +87,6 @@ export function startPresenceHeartbeat(
   userId: string,
   sessionId: string
 ): () => void {
-  const presenceRef = ref(rtdb, `presence/${sessionId}/${userId}`)
-  
   const interval = setInterval(() => {
     set(ref(rtdb, `presence/${sessionId}/${userId}/lastSeen`), Date.now())
   }, 30000) // 30 segundos

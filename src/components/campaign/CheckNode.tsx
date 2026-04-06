@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import type { SkillCheck } from '@/types/campaign'
 import { useCharacterStore } from '@/stores/characterStore'
-import { rollSkill } from '@/lib/dice'
-import { abilityModifier } from '@/types/character'
+import { rollSkill, type DiceRoll } from '@/lib/dice'
 import { Dices, TrendingUp, TrendingDown } from 'lucide-react'
 
 interface CheckNodeProps {
@@ -10,7 +9,7 @@ interface CheckNodeProps {
   onResult?: (success: boolean) => void
 }
 
-const skillAbilityMap: Record<string, string> = {
+const SKILL_ABILITIES: Record<string, string> = {
   athletics: 'str',
   acrobatics: 'dex',
   sleight_of_hand: 'dex',
@@ -34,7 +33,7 @@ const skillAbilityMap: Record<string, string> = {
 export function CheckNode({ check, onResult }: CheckNodeProps) {
   const characters = useCharacterStore((state) => state.characters)
   const [rolling, setRolling] = useState(false)
-  const [results, setResults] = useState<{ characterId: string; result: any; success: boolean }[]>([])
+  const [results, setResults] = useState<{ characterId: string; result: DiceRoll; success: boolean }[]>([])
   const [finalResult, setFinalResult] = useState<boolean | null>(null)
 
   const handleRoll = async () => {
@@ -43,7 +42,7 @@ export function CheckNode({ check, onResult }: CheckNodeProps) {
     // Simular delay para animación
     await new Promise(resolve => setTimeout(resolve, 500))
     
-    const rollResults: { characterId: string; result: any; success: boolean }[] = []
+    const rollResults: { characterId: string; result: DiceRoll; success: boolean }[] = []
     
     // Cada personaje tira
     for (const char of Object.values(characters)) {

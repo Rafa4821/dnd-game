@@ -2,11 +2,11 @@ import { useEffect, useRef } from 'react'
 import Phaser from 'phaser'
 import { GAME_CONFIG } from '@/phaser/config'
 import { TacticalCombatScene } from '@/phaser/scenes/TacticalCombatScene'
-import type { CombatState } from '@/types/combat'
+import type { CombatState, CombatActionType } from '@/types/combat'
 
 interface PhaserCombatProps {
   combatState: CombatState
-  onAction: (action: string, targetId?: string) => void
+  onAction: (action: CombatActionType, targetId?: string) => void | Promise<void>
   onEndTurn: () => void
 }
 
@@ -43,6 +43,7 @@ export function PhaserCombat({ combatState, onAction, onEndTurn }: PhaserCombatP
         sceneRef.current = null
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Actualizar estado del combate

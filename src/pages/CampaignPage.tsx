@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useAuthStore } from '@/stores/authStore'
 import { useSessionStore } from '@/stores/sessionStore'
 import { useCampaignStore } from '@/stores/campaignStore'
 import { NodeDisplay } from '@/components/campaign/NodeDisplay'

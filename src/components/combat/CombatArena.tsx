@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { useAuthStore } from '@/stores/authStore'
 import { useSessionStore } from '@/stores/sessionStore'
 import { useCombatStore } from '@/stores/combatStore'
 import { PhaserCombat } from './PhaserCombat'
@@ -36,16 +35,18 @@ export function CombatArena({ sessionId, encounterId, onCombatEnd }: CombatArena
           
           // Obtener personajes desde la sesión
           const playerCharacters = Object.values(currentSession.players)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .filter((player: any) => player.character !== null)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .map((player: any) => ({
-              id: player.character.id,
-              name: player.character.name,
-              class: player.character.class as any,
-              level: player.character.level,
-              hp: player.character.hp,
-              maxHp: player.character.maxHp,
+              id: player.character!.id,
+              name: player.character!.name,
+              class: player.character!.class,
+              level: player.character!.level,
+              hp: player.character!.hp,
+              maxHp: player.character!.maxHp,
               tempHp: 0,
-              ac: 10 + Math.floor((player.character.level - 1) / 4),
+              ac: 10 + Math.floor((player.character!.level - 1) / 4),
               initiative: 0,
               speed: 30,
               strength: 10,
@@ -54,7 +55,7 @@ export function CombatArena({ sessionId, encounterId, onCombatEnd }: CombatArena
               intelligence: 10,
               wisdom: 10,
               charisma: 10,
-              proficiencyBonus: Math.floor((player.character.level - 1) / 4) + 2,
+              proficiencyBonus: Math.floor((player.character!.level - 1) / 4) + 2,
               conditions: [],
               ownerId: player.uid,
               pregenId: null,
@@ -62,15 +63,22 @@ export function CombatArena({ sessionId, encounterId, onCombatEnd }: CombatArena
               inventory: [],
               spells: [],
               features: [],
-              skills: {},
-              savingThrows: {},
-              abilities: [],
+              skills: [],
+              savingThrows: [],
+              abilities: {
+                str: 10,
+                dex: 10,
+                con: 10,
+                int: 10,
+                wis: 10,
+                cha: 10,
+              },
               traits: [],
               specialAbilities: [],
               pregen: false,
               createdAt: Date.now(),
               updatedAt: Date.now(),
-            }) as any)
+            }))
           
           // Solo inicializar si hay personajes
           if (playerCharacters.length > 0) {
