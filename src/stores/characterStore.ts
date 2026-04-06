@@ -8,7 +8,6 @@ import {
   where,
   getDocs,
   Timestamp,
-  updateDoc,
   deleteDoc,
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
@@ -214,6 +213,25 @@ export const useCharacterStore = create<CharacterState>((set, get) => ({
       const errorMessage = error instanceof Error ? error.message : 'Error al actualizar personaje'
       set({ error: errorMessage })
       console.error('Error updating character:', error)
+      throw error
+    }
+  },
+
+  // Eliminar personaje
+  deleteCharacter: async (characterId) => {
+    try {
+      await deleteDoc(doc(db, 'characters', characterId))
+      
+      // Eliminar de cache
+      set((state) => {
+        const newCharacters = { ...state.characters }
+        delete newCharacters[characterId]
+        return { characters: newCharacters }
+      })
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Error al eliminar personaje'
+      set({ error: errorMessage })
+      console.error('Error deleting character:', error)
       throw error
     }
   },

@@ -4,9 +4,9 @@ import type { Combatant } from '@/types/combat'
 
 export class CombatantSprite extends Phaser.GameObjects.Container {
   private combatant: Combatant
-  private sprite: Phaser.GameObjects.Graphics
-  private healthBar: Phaser.GameObjects.Graphics
-  private nameText: Phaser.GameObjects.Text
+  private sprite!: Phaser.GameObjects.Graphics
+  private healthBar!: Phaser.GameObjects.Graphics
+  private nameText!: Phaser.GameObjects.Text
   private gridX: number
   private gridY: number
   public isAnimating: boolean = false
@@ -48,10 +48,10 @@ export class CombatantSprite extends Phaser.GameObjects.Container {
     if (isPlayer) {
       // Espada para jugadores
       this.sprite.lineStyle(3, 0xffffff, 1)
-      this.sprite.strokePath([
-        new Phaser.Geom.Point(-8, 8),
-        new Phaser.Geom.Point(8, -8),
-      ])
+      this.sprite.beginPath()
+      this.sprite.moveTo(-8, 8)
+      this.sprite.lineTo(8, -8)
+      this.sprite.strokePath()
     } else {
       // Calavera simple para enemigos
       this.sprite.fillStyle(0xffffff, 1)
@@ -116,7 +116,7 @@ export class CombatantSprite extends Phaser.GameObjects.Container {
     this.add(this.nameText)
   }
 
-  async moveTo(gridX: number, gridY: number): Promise<void> {
+  async moveToGrid(gridX: number, gridY: number): Promise<void> {
     this.isAnimating = true
     
     const worldX = gridX * GRID_CONFIG.TILE_SIZE + GRID_CONFIG.TILE_SIZE / 2

@@ -12,15 +12,13 @@ export interface GridCell {
 }
 
 export class GridSystem {
-  private scene: Phaser.Scene
   private grid: GridCell[][] = []
   private gridGraphics: Phaser.GameObjects.Graphics
   private highlightGraphics: Phaser.GameObjects.Graphics
 
-  constructor(scene: Phaser.Scene) {
-    this.scene = scene
-    this.gridGraphics = scene.add.graphics()
-    this.highlightGraphics = scene.add.graphics()
+  constructor(_scene: Phaser.Scene, _width: number, _height: number, _tileSize: number) {
+    this.gridGraphics = _scene.add.graphics()
+    this.highlightGraphics = _scene.add.graphics()
     this.initializeGrid()
     this.drawGrid()
   }
@@ -51,8 +49,6 @@ export class GridSystem {
 
     for (let y = 0; y < GRID_HEIGHT; y++) {
       for (let x = 0; x < GRID_WIDTH; x++) {
-        const cell = this.grid[y][x]
-        
         // Alternar colores para efecto tablero
         const fillColor = (x + y) % 2 === 0 ? TILE_COLORS.WALKABLE : 0x1e293b
         
@@ -125,8 +121,8 @@ export class GridSystem {
   }
 
   highlightPath(path: GridCell[]): void {
-    path.forEach(cell => {
-      this.highlightCell(cell.x, cell.y, GRID_CONFIG.TILE_COLORS.PATH, 0.5)
+    path.forEach(_cell => {
+      this.highlightCell(_cell.x, _cell.y, GRID_CONFIG.TILE_COLORS.PATH, 0.5)
     })
   }
 
@@ -238,7 +234,7 @@ export class GridSystem {
     
     while (current && current.parent) {
       path.unshift(current.cell)
-      const parent = current.parent
+      const parent: GridCell = current.parent
       current = { cell: parent, parent: null } // Simplificado para el ejemplo
       
       // En una implementación real, necesitarías rastrear mejor los padres

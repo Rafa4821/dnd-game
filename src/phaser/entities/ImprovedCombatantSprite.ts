@@ -7,14 +7,14 @@ import type { Combatant } from '@/types/combat'
  */
 export class ImprovedCombatantSprite extends Phaser.GameObjects.Container {
   private combatant: Combatant
-  private bodySprite: Phaser.GameObjects.Graphics
-  private weaponSprite: Phaser.GameObjects.Graphics
+  private bodySprite!: Phaser.GameObjects.Graphics
+  private weaponSprite!: Phaser.GameObjects.Graphics
   private shieldSprite: Phaser.GameObjects.Graphics | null = null
-  private shadowSprite: Phaser.GameObjects.Graphics
-  private healthBar: Phaser.GameObjects.Graphics
+  private shadowSprite!: Phaser.GameObjects.Graphics
+  private healthBar!: Phaser.GameObjects.Graphics
   private hpText: Phaser.GameObjects.Text | null = null
-  private nameText: Phaser.GameObjects.Text
-  private statusIcon: Phaser.GameObjects.Text
+  private nameText!: Phaser.GameObjects.Text
+  private statusIcon!: Phaser.GameObjects.Text
   private gridX: number
   private gridY: number
   public isAnimating: boolean = false

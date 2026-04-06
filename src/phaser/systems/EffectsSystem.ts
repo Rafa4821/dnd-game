@@ -127,7 +127,7 @@ export class EffectsSystem {
       
       // Dibuja círculo que crece
       let currentRadius = 0
-      const tween = this.scene.tweens.add({
+      this.scene.tweens.add({
         targets: { r: currentRadius },
         r: radius,
         duration: 1000,

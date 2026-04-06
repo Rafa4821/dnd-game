@@ -118,7 +118,7 @@ export class TacticalCombatScene extends Phaser.Scene {
     }
   }
 
-  private selectCombatant(sprite: CombatantSprite): void {
+  private selectCombatant(sprite: ImprovedCombatantSprite): void {
     // Deseleccionar anterior
     if (this.selectedCombatant) {
       this.selectedCombatant.highlight(false)
