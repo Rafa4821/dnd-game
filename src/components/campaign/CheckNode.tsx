@@ -108,17 +108,20 @@ export function CheckNode({ check, onResult }: CheckNodeProps) {
         <button
           onClick={handleRoll}
           disabled={rolling}
-          className="w-full py-4 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+          className="w-full py-4 bg-primary text-primary-foreground font-bold rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-all flex items-center justify-center gap-3 hover:scale-105 active:scale-95 shadow-lg"
         >
           {rolling ? (
             <>
-              <Dices className="w-5 h-5 animate-spin" />
-              Tirando...
+              <div className="relative">
+                <Dices className="w-6 h-6 animate-bounce" />
+                <div className="absolute inset-0 bg-primary-foreground/20 rounded-full animate-ping" />
+              </div>
+              <span className="animate-pulse">Tirando dados...</span>
             </>
           ) : (
             <>
-              <Dices className="w-5 h-5" />
-              Tirar {check.skill.replace('_', ' ')}
+              <Dices className="w-6 h-6" />
+              <span>Tirar {check.skill.replace('_', ' ')}</span>
             </>
           )}
         </button>
