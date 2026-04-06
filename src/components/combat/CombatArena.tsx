@@ -4,6 +4,8 @@ import { useCombatStore } from '@/stores/combatStore'
 import { PhaserCombat } from './PhaserCombat'
 import { CombatantCard } from './CombatantCard'
 import { ActionPanel } from './ActionPanel'
+import { CombatLog } from './CombatLog'
+import { CombatHUD } from './CombatHUD'
 import { Swords, SkipForward, Trophy, Skull, Loader2, Gamepad2 } from 'lucide-react'
 import type { CombatActionType } from '@/types/combat'
 import { getCurrentCombatant } from '@/types/combat'
@@ -272,12 +274,59 @@ export function CombatArena({ sessionId, encounterId, onCombatEnd }: CombatArena
 
       {/* Vista Táctica 2D con Phaser */}
       {tacticalView && (
-        <div className="min-h-[600px]">
-          <PhaserCombat
-            combatState={combat}
-            onAction={performAction}
-            onEndTurn={handleEndTurn}
-          />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Phaser Canvas */}
+          <div className="lg:col-span-2">
+            <PhaserCombat
+              combatState={combat}
+              onAction={performAction}
+              onEndTurn={handleEndTurn}
+            />
+          </div>
+
+          {/* Sidebar con HUD y controles */}
+          <div className="space-y-4">
+            {/* HUD de combatientes */}
+            <CombatHUD
+              combatants={combat.combatants}
+              currentTurnId={combat.turnOrder[combat.currentTurnIndex]}
+              round={combat.round}
+            />
+
+            {/* Panel de acciones (solo si es turno de jugador) */}
+            {isPlayerTurn && currentCombatant && (
+              <>
+                <ActionPanel
+                  onAction={handleAction}
+                  disabled={currentCombatant.hasActed}
+                  hasActed={currentCombatant.hasActed}
+                />
+
+                <button
+                  onClick={handleEndTurn}
+                  className="w-full py-3 flex items-center justify-center gap-2 bg-primary text-primary-foreground font-bold rounded-lg hover:bg-primary/90 transition-all hover:scale-105 active:scale-95"
+                >
+                  <SkipForward className="w-5 h-5" />
+                  Terminar Turno
+                </button>
+              </>
+            )}
+
+            {/* Indicador turno enemigo */}
+            {!isPlayerTurn && (
+              <div className="p-4 bg-red-500/10 border-2 border-red-500/30 rounded-lg">
+                <p className="text-center text-red-500 font-bold mb-2">
+                  🤖 Turno del enemigo
+                </p>
+                <div className="flex justify-center">
+                  <Loader2 className="w-6 h-6 animate-spin text-red-500" />
+                </div>
+              </div>
+            )}
+
+            {/* Combat Log */}
+            <CombatLog actions={combat.actions} maxHeight="400px" />
+          </div>
         </div>
       )}
 
@@ -364,31 +413,8 @@ export function CombatArena({ sessionId, encounterId, onCombatEnd }: CombatArena
             </div>
           )}
 
-          {/* Log de acciones */}
-          <div className="p-4 bg-card border border-border rounded-lg max-h-[400px] overflow-y-auto">
-            <h4 className="font-semibold mb-3">Log de Combate</h4>
-            <div className="space-y-2">
-              {combat.actions.slice(-10).reverse().map((action, index) => (
-                <div
-                  key={index}
-                  className="p-2 bg-muted/50 rounded text-sm"
-                >
-                  <p>{action.result.description}</p>
-                  {action.result.damage !== undefined && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Daño: {action.result.damage}
-                      {action.result.critical && ' (¡CRÍTICO!)'}
-                    </p>
-                  )}
-                </div>
-              ))}
-              {combat.actions.length === 0 && (
-                <p className="text-sm text-muted-foreground italic text-center">
-                  El combate acaba de comenzar...
-                </p>
-              )}
-            </div>
-          </div>
+          {/* Combat Log */}
+          <CombatLog actions={combat.actions} maxHeight="500px" />
         </div>
       </div>
         </>
