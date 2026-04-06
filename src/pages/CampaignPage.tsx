@@ -10,7 +10,6 @@ import { Moon, BookOpen, ScrollText, ArrowLeft } from 'lucide-react'
 export default function CampaignPage() {
   const { sessionId } = useParams<{ sessionId: string }>()
   const navigate = useNavigate()
-  const user = useAuthStore((state) => state.user)
   const { currentSession } = useSessionStore()
   const { 
     currentNode, 

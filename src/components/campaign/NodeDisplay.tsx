@@ -78,7 +78,7 @@ export function NodeDisplay({
         <CheckNode check={node.check} onResult={onCheck} />
       )}
 
-      {node.type === 'combat' && (
+      {node.type === 'combat' && onCombatEnd && (
         <CombatNode encounterId={node.encounterId!} onCombatEnd={onCombatEnd} />
       )}
     </div>

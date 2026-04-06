@@ -16,7 +16,6 @@ interface CombatArenaProps {
 }
 
 export function CombatArena({ sessionId, encounterId, onCombatEnd }: CombatArenaProps) {
-  const user = useAuthStore((state) => state.user)
   const { currentSession } = useSessionStore()
   const { combat, loading, initializeCombat, loadCombat, performAction, endTurn, executeEnemyAI } = useCombatStore()
   

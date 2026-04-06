@@ -34,7 +34,7 @@ export class TacticalCombatScene extends Phaser.Scene {
 
   create(): void {
     // Inicializar sistemas
-    this.gridSystem = new GridSystem(this)
+    this.gridSystem = new GridSystem(this, GRID_CONFIG.GRID_WIDTH, GRID_CONFIG.GRID_HEIGHT, GRID_CONFIG.TILE_SIZE)
     this.effectsSystem = new EffectsSystem(this)
     
     // UI de información

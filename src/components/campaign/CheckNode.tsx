@@ -10,7 +10,7 @@ interface CheckNodeProps {
   onResult?: (success: boolean) => void
 }
 
-const SKILL_ABILITIES: Record<string, keyof typeof abilityModifier> = {
+const skillAbilityMap: Record<string, string> = {
   athletics: 'str',
   acrobatics: 'dex',
   sleight_of_hand: 'dex',

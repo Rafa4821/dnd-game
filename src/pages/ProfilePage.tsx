@@ -23,7 +23,7 @@ export default function ProfilePage() {
   const navigate = useNavigate()
   const user = useAuthStore((state) => state.user)
   const signOut = useAuthStore((state) => state.signOut)
-  const { profile, readProfile, deleteProfile, subscribeToProfile, loading } = useUserProfileStore()
+  const { profile, loading, subscribeToProfile, deleteProfile } = useUserProfileStore()
   const { characters } = useCharacterStore()
 
   const [showEditDialog, setShowEditDialog] = useState(false)
