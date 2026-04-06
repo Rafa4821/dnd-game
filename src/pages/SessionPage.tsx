@@ -12,7 +12,7 @@ export default function SessionPage() {
   const navigate = useNavigate()
   const user = useAuthStore((state) => state.user)
   const signOut = useAuthStore((state) => state.signOut)
-  const { currentSession, loading, subscribeToSession, updatePlayerReady } = useSessionStore()
+  const { currentSession, loading, subscribeToSession, updatePlayerReady, startSession } = useSessionStore()
   const { createCharacter } = useCharacterStore()
   
   const [copied, setCopied] = useState(false)
@@ -35,6 +35,14 @@ export default function SessionPage() {
     const unsubscribe = subscribeToSession(sessionId)
     return () => unsubscribe()
   }, [sessionId, subscribeToSession, navigate])
+
+  // Auto-redirigir cuando la campaña inicie
+  useEffect(() => {
+    if (currentSession?.status === 'playing') {
+      console.log('🎮 Campaña iniciada, redirigiendo...')
+      navigate(`/campaign/${sessionId}`)
+    }
+  }, [currentSession?.status, sessionId, navigate])
 
   // Copiar código al portapapeles
   const handleCopyCode = () => {
@@ -64,6 +72,19 @@ export default function SessionPage() {
     if (!currentPlayer) return
     
     await updatePlayerReady(user.uid, !currentPlayer.ready)
+  }
+
+  // Iniciar campaña (solo owner)
+  const handleStartCampaign = async () => {
+    if (!isOwner || !allReady) return
+    
+    try {
+      await startSession()
+      // La navegación se hará automáticamente cuando el estado cambie
+    } catch (error) {
+      console.error('Error starting campaign:', error)
+      alert('Error al iniciar la campaña')
+    }
   }
 
   // Crear personaje
@@ -129,10 +150,10 @@ export default function SessionPage() {
     )
   }
 
-  const playerCount = Object.keys(currentSession.players).length
-  const isOwner = user?.uid === currentSession.ownerId
-  const currentPlayer = user?.uid ? currentSession.players[user.uid] : null
-  const allReady = Object.values(currentSession.players).every(p => p.ready && p.character)
+  const isOwner = user?.uid === currentSession?.ownerId
+  const playerCount = Object.keys(currentSession?.players || {}).length
+  const currentPlayer = user?.uid && currentSession ? currentSession.players[user.uid] : null
+  const allReady = currentSession ? Object.values(currentSession.players).every(p => p.ready && p.character) : false
 
   return (
     <div className="min-h-screen gothic-theme">
@@ -290,11 +311,11 @@ export default function SessionPage() {
                 <h3 className="font-semibold text-foreground">Control de Partida</h3>
                 
                 <button
-                  disabled={!allReady}
-                  onClick={() => navigate(`/campaign/${sessionId}`)}
+                  disabled={!allReady || loading}
+                  onClick={handleStartCampaign}
                   className="w-full py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  {allReady ? 'Iniciar Campaña' : 'Esperando jugadores...'}
+                  {loading ? 'Iniciando...' : allReady ? 'Iniciar Campaña' : 'Esperando jugadores...'}
                 </button>
 
                 {!allReady && (
