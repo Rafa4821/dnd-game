@@ -88,7 +88,7 @@ export default function SessionPage() {
   }
 
   // Crear personaje
-  const handleCreateCharacter = async (characterData: { name: string; pregenId: string }) => {
+  const handleCreateCharacter = async (characterData: { name: string; pregenId: string | null; customizations?: Record<string, unknown> | null }) => {
     if (!user?.uid || !currentSession) return
     
     try {

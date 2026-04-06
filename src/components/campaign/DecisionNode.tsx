@@ -151,10 +151,10 @@ export function DecisionNode({ options, onSelect }: DecisionNodeProps) {
               disabled={!isAvailable || myVote !== null}
               className={`relative p-4 border-2 rounded-lg text-left transition-all overflow-hidden ${
                 hasMyVote
-                  ? 'border-primary bg-primary/10'
+                  ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
                   : isAvailable
-                  ? 'border-border hover:border-primary hover:bg-accent/50'
-                  : 'border-border/50 opacity-50 cursor-not-allowed'
+                  ? 'border-border bg-card hover:border-primary hover:bg-primary/5'
+                  : 'border-border/50 bg-card/50 opacity-50 cursor-not-allowed'
               }`}
             >
               {/* Barra de progreso de votos */}
@@ -167,7 +167,9 @@ export function DecisionNode({ options, onSelect }: DecisionNodeProps) {
               
               <div className="relative flex items-center justify-between gap-4">
                 <div className="flex-1">
-                  <p className={`font-medium text-foreground ${ !isAvailable ? 'text-muted-foreground' : ''}`}>
+                  <p className={`font-bold text-base leading-relaxed ${
+                    !isAvailable ? 'text-gray-500' : hasMyVote ? 'text-primary' : 'text-gray-100'
+                  }`}>
                     {option.text}
                   </p>
                   {!isAvailable && option.requirements && (
@@ -180,7 +182,7 @@ export function DecisionNode({ options, onSelect }: DecisionNodeProps) {
                   {/* Avatares de jugadores que votaron */}
                   {voteCount > 0 && (
                     <div className="flex items-center gap-2 mt-3">
-                      <span className="text-xs text-gray-400 font-medium">
+                      <span className="text-xs text-gray-300 font-semibold">
                         {voteCount} {voteCount === 1 ? 'voto' : 'votos'}:
                       </span>
                       <div className="flex -space-x-2">
@@ -202,11 +204,11 @@ export function DecisionNode({ options, onSelect }: DecisionNodeProps) {
                 </div>
                 
                 {isAvailable && !myVote && (
-                  <ChevronRight className="w-5 h-5 text-gray-400" />
+                  <ChevronRight className="w-5 h-5 text-gray-300" />
                 )}
                 
                 {hasMyVote && (
-                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-lg">
                     <ChevronRight className="w-5 h-5 text-primary-foreground" />
                   </div>
                 )}
