@@ -47,8 +47,8 @@ export function EditProfileDialog({ isOpen, onClose, userId }: EditProfileDialog
         displayName: formData.displayName,
         bio: formData.bio || null,
         avatar: formData.avatar || null,
-        favoriteClass: formData.favoriteClass as any || null,
-        theme: formData.theme as any,
+        favoriteClass: (formData.favoriteClass as 'fighter' | 'rogue' | 'ranger' | 'cleric' | 'barbarian' | 'wizard' | '') || null,
+        theme: formData.theme as 'dark' | 'light' | 'system',
         notifications: formData.notifications,
         publicProfile: formData.publicProfile,
       }

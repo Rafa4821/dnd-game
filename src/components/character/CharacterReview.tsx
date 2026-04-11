@@ -4,7 +4,7 @@ import { Check } from 'lucide-react'
 interface CharacterReviewProps {
   pregenId: string
   name: string
-  customizations: any
+  customizations: Record<string, unknown>
 }
 
 export function CharacterReview({ pregenId, name }: CharacterReviewProps) {

@@ -221,7 +221,7 @@ export const useUserProfileStore = create<UserProfileStore>((set, get) => ({
     try {
       const profileRef = doc(db, 'profiles', uid)
       
-      const updates: any = {
+      const updates: Record<string, number> = {
         updatedAt: Date.now(),
       }
 

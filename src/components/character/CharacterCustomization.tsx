@@ -4,7 +4,7 @@ interface CharacterCustomizationProps {
   pregenId: string
   name: string
   onNameChange: (name: string) => void
-  onCustomizationsChange: (customizations: any) => void
+  onCustomizationsChange: (customizations: Record<string, unknown>) => void
 }
 
 export function CharacterCustomization({

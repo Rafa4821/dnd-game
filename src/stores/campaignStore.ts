@@ -91,7 +91,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
         return
       }
       
-      const data = docSnap.data()
+      const data: Record<string, unknown> = docSnap.data()
       const progress: CampaignProgress = {
         ...data,
         createdAt: data.createdAt instanceof Timestamp 
@@ -155,7 +155,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       // Guardar en Firestore
       await updateDoc(
         doc(db, 'sessions', progress.sessionId, 'campaign', 'progress'),
-        updatedProgress as any
+        updatedProgress as Record<string, unknown>
       )
       
       set({
@@ -205,7 +205,9 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       })
       
       // Navegar al siguiente nodo
-      await get().navigateToNode(option.nextNodeId)
+      if (option.nextNodeId) {
+        await get().navigateToNode(option.nextNodeId)
+      }
       
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Error al tomar decisión'

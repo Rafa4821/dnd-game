@@ -80,6 +80,7 @@ export function CombatArena({ sessionId, encounterId, onCombatEnd }: CombatArena
               pregen: false,
               createdAt: Date.now(),
               updatedAt: Date.now(),
+              tags: [], // Agregar campo tags vacío para compatibilidad con V2
             }))
           
           // Solo inicializar si hay personajes

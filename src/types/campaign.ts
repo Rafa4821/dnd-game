@@ -12,28 +12,60 @@ export const NodeType = z.enum([
   'check',      // Skill check o saving throw
   'combat',     // Encuentro de combate
   'rest',       // Descanso corto/largo
+  'puzzle',     // Puzzle cooperativo (V2)
+  'dialogue',   // Diálogo condicional (V2)
 ])
 
 export type NodeType = z.infer<typeof NodeType>
 
-// Opción de decisión
+// Opción de decisión (V2 mejorado)
 export const DecisionOption = z.object({
   id: z.string(),
   text: z.string(),
-  nextNodeId: z.string(),
-  requirements: z.array(z.string()).optional(), // flags requeridos
-  setsFlags: z.record(z.boolean()).optional(),  // flags que setea
+  nextNodeId: z.string().optional(),
+  
+  // V2: Requirements como objeto de flags en lugar de array
+  requirements: z.union([
+    z.array(z.string()),
+    z.record(z.boolean()),
+  ]).optional(),
+  
+  setsFlags: z.record(z.boolean()).optional(),
+  modifiesVariables: z.record(z.number()).optional(),
+  
+  // V2: Check inline en opción
+  check: z.object({
+    skill: z.string(),
+    dc: z.number(),
+  }).optional(),
 })
 
 export type DecisionOption = z.infer<typeof DecisionOption>
 
-// Check de habilidad
+// Check de habilidad (V2 mejorado)
 export const SkillCheck = z.object({
   skill: z.string(), // 'perception', 'athletics', etc.
   dc: z.number(),
-  successNodeId: z.string(),
-  failureNodeId: z.string(),
-  groupCheck: z.boolean().default(false), // ¿todos deben pasar?
+  
+  // Mantener compatibilidad con V1
+  successNodeId: z.string().optional(),
+  failureNodeId: z.string().optional(),
+  groupCheck: z.boolean().optional().default(false),
+  
+  // V2: Resultados más ricos
+  onSuccess: z.object({
+    description: z.string(),
+    nextNodeId: z.string(),
+    setsFlags: z.record(z.boolean()).optional(),
+    modifiesVariables: z.record(z.number()).optional(),
+  }).optional(),
+  
+  onFailure: z.object({
+    description: z.string(),
+    nextNodeId: z.string(),
+    setsFlags: z.record(z.boolean()).optional(),
+    modifiesVariables: z.record(z.number()).optional(),
+  }).optional(),
 })
 
 export type SkillCheck = z.infer<typeof SkillCheck>
@@ -57,6 +89,13 @@ export const CampaignNode = z.object({
   // Para nodos de combate
   encounterId: z.string().nullable(),
   
+  // Campaña V2 - Puzzles y diálogos
+  puzzleId: z.string().optional(),    // ID del puzzle cooperativo
+  dialogueId: z.string().optional(),  // ID del diálogo condicional
+  
+  // Campaña V2 - Assets multimodales
+  assetManifestId: z.string().optional(), // ID del manifiesto de assets
+  
   // Efectos
   setsFlags: z.record(z.boolean()).optional(),
   modifiesVariables: z.record(z.number()).optional(),
@@ -64,6 +103,13 @@ export const CampaignNode = z.object({
   // Metadata
   act: z.number().int().min(1).max(3).default(1),
   location: z.string().optional(),
+  
+  // Escalado por número de jugadores
+  scaling: z.object({
+    minPlayers: z.number().default(2),
+    maxPlayers: z.number().default(6),
+    modifications: z.record(z.any()).optional(), // Cambios por player count
+  }).optional(),
 })
 
 export type CampaignNode = z.infer<typeof CampaignNode>
@@ -81,7 +127,7 @@ export const CampaignProgress = z.object({
     nodeId: z.string(),
     type: z.enum(['narrative', 'decision', 'check', 'combat', 'system']),
     content: z.string(),
-    metadata: z.any().optional(),
+    metadata: z.record(z.unknown()).optional(),
   })),
   createdAt: z.number(),
   updatedAt: z.number(),
@@ -96,33 +142,30 @@ export interface LogEntry {
   nodeId: string
   type: 'narrative' | 'decision' | 'check' | 'combat' | 'system'
   content: string
-  metadata?: any
+  metadata?: unknown
 }
 
 /**
  * Evaluar si un nodo está disponible basado en flags
  */
-export function isNodeAvailable(
-  node: CampaignNode,
-  currentFlags: Record<string, boolean>
-): boolean {
-  // Si el nodo no tiene opciones, está disponible
-  if (!node.options || node.options.length === 0) return true
-  
-  // Verificar si al menos una opción es válida
-  return node.options.some(option => {
-    if (!option.requirements) return true
-    return option.requirements.every(flag => currentFlags[flag] === true)
-  })
-}
-
 /**
  * Evaluar requisitos de una opción
  */
 export function meetsRequirements(
-  requirements: string[] | undefined,
-  currentFlags: Record<string, boolean>
+  requirements: string[] | Record<string, boolean> | undefined,
+  flags: Record<string, boolean>
 ): boolean {
-  if (!requirements || requirements.length === 0) return true
-  return requirements.every(flag => currentFlags[flag] === true)
+  if (!requirements) return true
+  
+  // Si es array de strings (V1)
+  if (Array.isArray(requirements)) {
+    if (requirements.length === 0) return true
+    return requirements.every((flag) => flags[flag] === true)
+  }
+  
+  // Si es objeto (V2)
+  return Object.entries(requirements).every(([flag, required]) => {
+    if (!required) return true
+    return flags[flag] === true
+  })
 }

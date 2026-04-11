@@ -10,7 +10,7 @@ import { rollAttack, rollDamage, rollInitiative, type DiceRoll } from './dice'
  * Calcular AC efectivo con condiciones
  */
 export function calculateAC(character: Character): number {
-  let ac = character.ac
+  const ac = character.ac
   
   // Aplicar modificadores de condiciones
   if (character.conditions.includes('prone')) {

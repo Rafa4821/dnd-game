@@ -1,8 +1,10 @@
 import type { CampaignNode } from '@/types/campaign'
-import { Book, Swords, CheckCircle, MessageCircle, Moon } from 'lucide-react'
+import { Book, Swords, CheckCircle, MessageCircle, Moon, Puzzle, Users } from 'lucide-react'
 import { DecisionNode } from './DecisionNode'
 import { CheckNode } from './CheckNode'
 import { CombatNode } from './CombatNode'
+import { CooperativePuzzle } from '@/components/puzzle/CooperativePuzzle'
+import { ConditionalDialogue } from './ConditionalDialogue'
 
 interface NodeDisplayProps {
   node: CampaignNode
@@ -10,6 +12,8 @@ interface NodeDisplayProps {
   onDecision?: (optionId: string) => void
   onCheck?: (success: boolean) => void
   onCombatEnd?: () => void
+  onPuzzleComplete?: (success: boolean) => void
+  onDialogueComplete?: (nextNodeId: string) => void
 }
 
 const NODE_ICONS = {
@@ -18,6 +22,8 @@ const NODE_ICONS = {
   check: CheckCircle,
   combat: Swords,
   rest: Moon,
+  puzzle: Puzzle,
+  dialogue: Users,
 }
 
 export function NodeDisplay({ 
@@ -25,7 +31,9 @@ export function NodeDisplay({
   onContinue, 
   onDecision,
   onCheck,
-  onCombatEnd 
+  onCombatEnd,
+  onPuzzleComplete,
+  onDialogueComplete
 }: NodeDisplayProps) {
   const Icon = NODE_ICONS[node.type]
 
@@ -82,6 +90,26 @@ export function NodeDisplay({
 
       {node.type === 'combat' && onCombatEnd && (
         <CombatNode encounterId={node.encounterId!} onCombatEnd={onCombatEnd} />
+      )}
+
+      {node.type === 'puzzle' && node.puzzleId && onPuzzleComplete && (
+        <div className="mt-4">
+          <CooperativePuzzle
+            puzzleId={node.puzzleId}
+            sessionId={node.id}
+            onComplete={onPuzzleComplete}
+          />
+        </div>
+      )}
+
+      {node.type === 'dialogue' && node.dialogueId && onDialogueComplete && (
+        <div className="mt-4">
+          <ConditionalDialogue
+            dialogueId={node.dialogueId}
+            sessionId={node.id}
+            onComplete={onDialogueComplete}
+          />
+        </div>
       )}
     </div>
   )

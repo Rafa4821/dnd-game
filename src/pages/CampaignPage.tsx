@@ -4,6 +4,7 @@ import { useSessionStore } from '@/stores/sessionStore'
 import { useCampaignStore } from '@/stores/campaignStore'
 import { NodeDisplay } from '@/components/campaign/NodeDisplay'
 import { CampaignLog } from '@/components/campaign/CampaignLog'
+import { AudioPlayer } from '@/components/audio/AudioPlayer'
 import { Moon, BookOpen, ScrollText, ArrowLeft } from 'lucide-react'
 
 export default function CampaignPage() {
@@ -70,12 +71,28 @@ export default function CampaignPage() {
       ? currentNode.check.successNodeId 
       : currentNode.check.failureNodeId
     
-    await navigateToNode(nextNodeId)
+    if (nextNodeId) {
+      await navigateToNode(nextNodeId)
+    }
   }
 
   const handleCombatEnd = async () => {
     if (currentNode?.nextNodeId) {
       await navigateToNode(currentNode.nextNodeId)
+    }
+  }
+
+  const handlePuzzleComplete = async (success: boolean) => {
+    if (!currentNode) return
+    
+    // El puzzle ya maneja la navegación internamente vía puzzleStore
+    // Aquí solo logeamos el resultado
+    console.log(`Puzzle ${success ? 'completado' : 'fallido'}:`, currentNode.id)
+  }
+
+  const handleDialogueComplete = async (nextNodeId: string) => {
+    if (nextNodeId) {
+      await navigateToNode(nextNodeId)
     }
   }
 
@@ -190,6 +207,8 @@ export default function CampaignPage() {
               onDecision={handleDecision}
               onCheck={handleCheck}
               onCombatEnd={handleCombatEnd}
+              onPuzzleComplete={handlePuzzleComplete}
+              onDialogueComplete={handleDialogueComplete}
             />
           </div>
 
@@ -246,6 +265,11 @@ export default function CampaignPage() {
           </div>
         </div>
       </main>
+
+      {/* Audio Player flotante */}
+      {currentNode?.assetManifestId && (
+        <AudioPlayer manifestId={currentNode.assetManifestId} />
+      )}
     </div>
   )
 }

@@ -73,6 +73,37 @@ export type CombatAction = z.infer<typeof CombatAction>
 // ENCUENTROS
 // ============================================
 
+// Roles de enemigos (Campaña V2)
+export const EnemyRole = z.enum([
+  'minion',      // Bajo HP, fácil de matar
+  'swarm',       // Muchos, débiles
+  'skirmisher',  // Móvil, evasivo
+  'bruiser',     // Alto daño cuerpo a cuerpo
+  'tank',        // Alto HP/AC
+  'controller',  // Debuffs y control
+  'ranged',      // Ataque a distancia
+  'elite',       // Enemigo especial
+  'boss',        // Jefe de encuentro
+  'assassin',    // Críticos y burst
+  'grappler',    // Agarra y controla
+  'debuffer',    // Penaliza al party
+  'ambush',      // Ventaja en sorpresa
+  'soldier',     // Formación y tácticas
+  'ritual',      // Buff a otros enemigos
+])
+export type EnemyRole = z.infer<typeof EnemyRole>
+
+// Habilidad especial de enemigo
+export const EnemyAbility = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  type: z.enum(['passive', 'action', 'reaction', 'recharge']),
+  usesPerDay: z.number().nullable(),
+  rechargeOn: z.number().nullable(), // Ej: 5-6 en d6
+})
+export type EnemyAbility = z.infer<typeof EnemyAbility>
+
 export const Enemy = z.object({
   id: z.string(),
   name: z.string(),
@@ -82,6 +113,19 @@ export const Enemy = z.object({
   damage: z.string(),
   cr: z.number(),
   count: z.number().default(1),
+  
+  // Campaña V2 - Bestiario expandido
+  role: EnemyRole.optional(),
+  initiative: z.number().optional(),
+  abilities: z.array(EnemyAbility).optional(),
+  
+  // Resistencias/vulnerabilidades
+  resistances: z.array(z.string()).optional(), // ['fire', 'poison']
+  vulnerabilities: z.array(z.string()).optional(), // ['radiant']
+  immunities: z.array(z.string()).optional(),
+  
+  // Audio
+  barkSfx: z.string().optional(), // ID del asset de audio
 })
 export type Enemy = z.infer<typeof Enemy>
 

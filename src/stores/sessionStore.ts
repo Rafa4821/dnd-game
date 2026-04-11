@@ -411,13 +411,23 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       
       console.log('📦 Campaign actualizado:', JSON.stringify(updatedCampaign, null, 2))
       
-      // Usar setDoc con merge en lugar de updateDoc
+      // Actualizar store local INMEDIATAMENTE (optimistic update)
+      set({ 
+        currentSession: {
+          ...session,
+          campaign: updatedCampaign,
+          updatedAt: Date.now(),
+        }
+      })
+      console.log('✅ Store local actualizado (optimistic)')
+      
+      // Guardar en Firebase (el snapshot lo re-sincronizará)
       await setDoc(docRef, {
         campaign: updatedCampaign,
         updatedAt: Date.now(),
       }, { merge: true })
 
-      console.log('✅ SetDoc con merge completado exitosamente')
+      console.log('✅ SetDoc en Firebase completado')
     } catch (error) {
       console.error('❌ Error initializing voting:', error)
       console.error('❌ Error details:', {
@@ -463,6 +473,16 @@ export const useSessionStore = create<SessionState>((set, get) => ({
           },
         },
       }
+
+      // Optimistic update: actualizar store local inmediatamente
+      set({ 
+        currentSession: {
+          ...session,
+          campaign: updatedCampaign,
+          updatedAt: Date.now(),
+        }
+      })
+      console.log('✅ Voto registrado en store local (optimistic)')
 
       await updateDoc(doc(db, 'sessions', session.id), {
         campaign: updatedCampaign,

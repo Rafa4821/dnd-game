@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { CharacterTagSchema } from './tags'
 
 /**
  * Esquemas de personaje basados en SRD 5.1 y CAMPAÑA.md
@@ -24,6 +25,8 @@ export const CharacterClass = z.enum([
   'cleric',     // Exorcista
   'ranger',     // Explorador
   'barbarian',  // Maldito
+  'wizard',
+  'paladin',
 ])
 
 export type CharacterClass = z.infer<typeof CharacterClass>
@@ -95,6 +98,9 @@ export const Character = z.object({
   
   // Estados
   conditions: z.array(z.string()).default([]), // ['poisoned', 'frightened']
+  
+  // Tags de Campaña V2
+  tags: z.array(CharacterTagSchema).default([]), // Tags para diálogos/puzzles
   
   // Metadata
   pregen: z.boolean().default(false), // ¿Es un pregen de la campaña?
