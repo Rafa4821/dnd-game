@@ -5,7 +5,11 @@ import { useCampaignStore } from '@/stores/campaignStore'
 import { NodeDisplay } from '@/components/campaign/NodeDisplay'
 import { CampaignLog } from '@/components/campaign/CampaignLog'
 import { AudioPlayer } from '@/components/audio/AudioPlayer'
-import { Moon, BookOpen, ScrollText, ArrowLeft } from 'lucide-react'
+import { CharacterPanel } from '@/components/campaign/CharacterPanel'
+import { DiceRoller } from '@/components/campaign/DiceRoller'
+import { PartyStatus } from '@/components/campaign/PartyStatus'
+import { QuickNotes } from '@/components/campaign/QuickNotes'
+import { Moon, BookOpen, ScrollText, ArrowLeft, Sparkles, Flame, Skull, Eye } from 'lucide-react'
 
 export default function CampaignPage() {
   const { sessionId } = useParams<{ sessionId: string }>()
@@ -136,24 +140,33 @@ export default function CampaignPage() {
   }
 
   return (
-    <div className="min-h-screen gothic-theme">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-red-950/30 relative">
+      {/* Background effects */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-red-600/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/5 rounded-full blur-3xl" />
+      </div>
+
       {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur sticky top-0 z-10 shadow-sm">
-        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
-            <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
+      <header className="sticky top-0 z-50 border-b border-red-900/30 bg-slate-900/80 backdrop-blur-md shadow-lg shadow-red-900/20">
+        <div className="container mx-auto px-4 sm:px-6 py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
               <button
                 onClick={() => navigate(`/session/${sessionId}`)}
-                className="p-2 hover:bg-accent rounded-lg transition-colors"
+                className="p-2 hover:bg-red-950/50 rounded-xl border border-red-900/30 hover:border-red-600/50 transition-all"
               >
-                <ArrowLeft className="w-5 h-5" />
+                <ArrowLeft className="w-5 h-5 text-gray-400 hover:text-white" />
               </button>
               
-              <div className="flex items-center gap-2 sm:gap-3">
-                <Moon className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-red-500/20 blur-xl rounded-full" />
+                  <Moon className="relative w-10 h-10 text-red-400" />
+                </div>
                 <div>
-                  <h1 className="text-lg sm:text-xl font-bold text-foreground">Sangrebruma</h1>
-                  <p className="text-sm text-gray-400 font-mono font-semibold">
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-red-400 via-rose-300 to-red-500 bg-clip-text text-transparent">Sangrebruma</h1>
+                  <p className="text-sm text-gray-400 font-mono font-bold">
                     {currentSession?.code || 'Campaña'}
                   </p>
                 </div>
@@ -161,35 +174,50 @@ export default function CampaignPage() {
             </div>
 
             {/* Variables del juego */}
-            <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm w-full sm:w-auto">
-              <div className="flex items-center gap-2">
-                <span className="text-gray-400 font-medium"> Oscuridad:</span>
-                <span className="font-bold text-foreground">{progress.variables.darkness}/6</span>
+            <div className="flex items-center gap-4">
+              <div className="relative group/var">
+                <div className="absolute -inset-0.5 bg-purple-600 rounded-xl blur opacity-20 group-hover/var:opacity-30 transition" />
+                <div className="relative flex items-center gap-2 px-4 py-2 bg-slate-800/80 border-2 border-purple-900/50 rounded-xl">
+                  <Eye className="w-4 h-4 text-purple-400" />
+                  <span className="text-sm font-bold text-white">{progress.variables.darkness}/6</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-gray-400 font-medium"> Deuda:</span>
-                <span className="font-bold text-foreground">{progress.variables.bloodDebt}/3</span>
+              <div className="relative group/var">
+                <div className="absolute -inset-0.5 bg-red-600 rounded-xl blur opacity-20 group-hover/var:opacity-30 transition" />
+                <div className="relative flex items-center gap-2 px-4 py-2 bg-slate-800/80 border-2 border-red-900/50 rounded-xl">
+                  <Flame className="w-4 h-4 text-red-400" />
+                  <span className="text-sm font-bold text-white">{progress.variables.bloodDebt}/3</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-gray-400 font-medium"> Acto:</span>
-                <span className="font-bold text-foreground">{progress.variables.act}/3</span>
+              <div className="relative group/var">
+                <div className="absolute -inset-0.5 bg-amber-600 rounded-xl blur opacity-20 group-hover/var:opacity-30 transition" />
+                <div className="relative flex items-center gap-2 px-4 py-2 bg-slate-800/80 border-2 border-amber-900/50 rounded-xl">
+                  <Sparkles className="w-4 h-4 text-amber-400" />
+                  <span className="text-sm font-bold text-white">Acto {progress.variables.act}/3</span>
+                </div>
               </div>
               
               <button
                 onClick={() => setShowLog(!showLog)}
-                className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg hover:bg-accent transition-colors"
+                className="relative group/btn"
               >
-                <ScrollText className="w-4 h-4" />
-                Log
+                <div className="absolute -inset-0.5 bg-blue-600 rounded-xl blur opacity-0 group-hover/btn:opacity-50 transition" />
+                <div className="relative flex items-center gap-2 px-4 py-2 bg-slate-800/80 hover:bg-slate-800 border-2 border-blue-900/50 hover:border-blue-600/50 rounded-xl transition-all">
+                  <ScrollText className="w-4 h-4 text-blue-400" />
+                  <span className="text-sm font-bold text-white">Log</span>
+                </div>
               </button>
 
               <button
                 onClick={handleResetCampaign}
-                className="flex items-center gap-2 px-3 py-2 border border-destructive/50 text-destructive rounded-lg hover:bg-destructive/10 transition-colors"
+                className="relative group/btn"
                 title="Reiniciar campaña desde el inicio"
               >
-                <Moon className="w-4 h-4" />
-                Reiniciar
+                <div className="absolute -inset-0.5 bg-red-600 rounded-xl blur opacity-0 group-hover/btn:opacity-50 transition" />
+                <div className="relative flex items-center gap-2 px-4 py-2 bg-slate-800/80 hover:bg-red-950/50 border-2 border-red-900/50 hover:border-red-600/50 rounded-xl transition-all">
+                  <Skull className="w-4 h-4 text-red-400" />
+                  <span className="text-sm font-bold text-red-300">Reiniciar</span>
+                </div>
               </button>
             </div>
           </div>
@@ -197,10 +225,16 @@ export default function CampaignPage() {
       </header>
 
       {/* Content */}
-      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
-          {/* Nodo principal */}
-          <div className="lg:col-span-2">
+      <main className="relative container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left Sidebar - Character Tools */}
+          <div className="lg:col-span-3 space-y-6">
+            <CharacterPanel />
+            <DiceRoller />
+          </div>
+
+          {/* Center - Main Narrative */}
+          <div className="lg:col-span-6">
             <NodeDisplay
               node={currentNode}
               onContinue={handleContinue}
@@ -212,54 +246,76 @@ export default function CampaignPage() {
             />
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
+          {/* Right Sidebar - Party & Notes */}
+          <div className="lg:col-span-3 space-y-6">
+            <PartyStatus />
+            <QuickNotes />
             {/* Progreso */}
-            <div className="p-4 bg-card border border-border rounded-lg">
-              <div className="flex items-center gap-2 mb-3">
-                <BookOpen className="w-5 h-5 text-primary" />
-                <h3 className="font-semibold">Progreso</h3>
-              </div>
-              
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Nodos visitados:</span>
-                  <span className="font-medium">{progress.visitedNodes.length}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Acto actual:</span>
-                  <span className="font-medium">{progress.variables.act || 1}/3</span>
-                </div>
-              </div>
-
-              {/* Flags activos */}
-              {Object.keys(progress.flags).length > 0 && (
-                <div className="mt-4 pt-4 border-t border-border">
-                  <p className="text-xs text-muted-foreground mb-2">Flags activos:</p>
-                  <div className="flex flex-wrap gap-1">
-                    {Object.entries(progress.flags)
-                      .filter(([_, value]) => value)
-                      .map(([key]) => (
-                        <span
-                          key={key}
-                          className="px-2 py-1 text-xs bg-primary/10 text-primary rounded"
-                        >
-                          {key.replace('f_', '').replace(/_/g, ' ')}
-                        </span>
-                      ))}
+            <div className="relative group">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl blur opacity-30 group-hover:opacity-40 transition duration-300" />
+              <div className="relative bg-slate-900/95 backdrop-blur-sm border-2 border-green-900/50 rounded-2xl overflow-hidden">
+                <div className="p-5 bg-gradient-to-r from-green-950/50 to-emerald-950/30 border-b border-green-900/30">
+                  <div className="flex items-center gap-3">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-green-500/20 blur-lg rounded-full" />
+                      <BookOpen className="relative w-8 h-8 text-green-400" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white">Progreso</h3>
                   </div>
                 </div>
-              )}
+                
+                <div className="p-5 space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-3 bg-slate-800/60 border border-slate-700/50 rounded-xl text-center">
+                      <div className="text-3xl font-bold text-green-400">{progress.visitedNodes.length}</div>
+                      <div className="text-xs text-gray-400 mt-1">Nodos visitados</div>
+                    </div>
+                    <div className="p-3 bg-slate-800/60 border border-slate-700/50 rounded-xl text-center">
+                      <div className="text-3xl font-bold text-amber-400">{progress.variables.act || 1}</div>
+                      <div className="text-xs text-gray-400 mt-1">Acto actual</div>
+                    </div>
+                  </div>
+
+                  {/* Flags activos */}
+                  {Object.keys(progress.flags).length > 0 && (
+                    <div className="pt-4 border-t border-green-900/30">
+                      <p className="text-xs font-bold text-green-300 mb-2">Eventos Desbloqueados</p>
+                      <div className="flex flex-wrap gap-2">
+                        {Object.entries(progress.flags)
+                          .filter(([_, value]) => value)
+                          .map(([key]) => (
+                            <span
+                              key={key}
+                              className="px-3 py-1 text-xs font-bold bg-green-600/20 text-green-300 border border-green-600/30 rounded-lg"
+                            >
+                              {key.replace('F_', '').replace(/_/g, ' ')}
+                            </span>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
             {/* Log (collapsible) */}
             {showLog && (
-              <div className="p-4 bg-card border border-border rounded-lg">
-                <div className="flex items-center gap-2 mb-3">
-                  <ScrollText className="w-5 h-5 text-primary" />
-                  <h3 className="font-semibold">Log de Eventos</h3>
+              <div className="relative group animate-in slide-in-from-right duration-300">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl blur opacity-30 group-hover:opacity-40 transition duration-300" />
+                <div className="relative bg-slate-900/95 backdrop-blur-sm border-2 border-blue-900/50 rounded-2xl overflow-hidden">
+                  <div className="p-5 bg-gradient-to-r from-blue-950/50 to-cyan-950/30 border-b border-blue-900/30">
+                    <div className="flex items-center gap-3">
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-blue-500/20 blur-lg rounded-full" />
+                        <ScrollText className="relative w-8 h-8 text-blue-400" />
+                      </div>
+                      <h3 className="text-xl font-bold text-white">Log de Eventos</h3>
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <CampaignLog />
+                  </div>
                 </div>
-                <CampaignLog />
               </div>
             )}
           </div>
