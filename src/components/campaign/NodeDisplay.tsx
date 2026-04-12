@@ -5,6 +5,7 @@ import { CheckNode } from './CheckNode'
 import { CombatNode } from './CombatNode'
 import { CooperativePuzzle } from '@/components/puzzle/CooperativePuzzle'
 import { ConditionalDialogue } from './ConditionalDialogue'
+import { getDialogueConfig } from '@/data/dialogues'
 
 interface NodeDisplayProps {
   node: CampaignNode
@@ -102,15 +103,20 @@ export function NodeDisplay({
         </div>
       )}
 
-      {node.type === 'dialogue' && node.dialogueId && onDialogueComplete && (
-        <div className="mt-4">
-          <ConditionalDialogue
-            dialogueId={node.dialogueId}
-            sessionId={node.id}
-            onComplete={onDialogueComplete}
-          />
-        </div>
-      )}
+      {node.type === 'dialogue' && node.dialogueId && onDialogueComplete && (() => {
+        const dialogueConfig = getDialogueConfig(node.dialogueId)
+        if (!dialogueConfig) return null
+        
+        return (
+          <div className="mt-4">
+            <ConditionalDialogue
+              dialogueConfig={dialogueConfig}
+              sessionId={node.id}
+              onComplete={onDialogueComplete}
+            />
+          </div>
+        )
+      })()}
     </div>
   )
 }

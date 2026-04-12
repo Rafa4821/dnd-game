@@ -63,6 +63,7 @@ export const PuzzleConfig = z.object({
   // Anti-estancamiento
   maxAttempts: z.number().optional(),
   hintsAvailable: z.number().default(3),
+  hints: z.array(z.string()).optional(), // Lista de pistas textuales
   hintCost: z.object({
     type: z.enum(['corruption', 'time', 'resource']),
     value: z.number(),

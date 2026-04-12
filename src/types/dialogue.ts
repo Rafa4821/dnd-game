@@ -13,6 +13,9 @@ export const DialogueOption = z.object({
   id: z.string(),
   text: z.string(),
   
+  // Navegación simple
+  nextLineId: z.string().optional(),                  // siguiente línea de diálogo
+  
   // Condiciones para mostrar esta opción
   requiresPartyTags: z.array(z.string()).optional(),  // party debe tener al menos uno
   requiresAllTags: z.array(z.string()).optional(),    // party debe tener todos
@@ -95,7 +98,7 @@ export const DialogueConfig = z.object({
   
   // NPC que habla
   npcId: z.string(),
-  npcName: z.string(),
+  npcName: z.string().optional(),
   npcDescription: z.string().optional(),
   npcPortrait: z.string().optional(),
   
@@ -103,8 +106,15 @@ export const DialogueConfig = z.object({
   startLineId: z.string(),
   lines: z.array(DialogueLine),
   
+  // Acción al completar
+  onComplete: z.object({
+    nextNodeId: z.string(),
+    flags: z.record(z.boolean()).optional(),
+    variables: z.record(z.number()).optional(),
+  }).optional(),
+  
   // Configuración general
-  allowMultipleSpeakers: z.boolean().default(true),
+  allowMultipleSpeakers: z.boolean().optional(),
   timeoutSeconds: z.number().optional(), // tiempo para responder
   
   // Assets

@@ -106,7 +106,7 @@ export function CharacterWizard({ onComplete, onCancel }: CharacterWizardProps) 
             <CharacterReview
               pregenId={selectedPregenId}
               name={characterName}
-              customizations={customizations}
+              customizations={customizations || {}}
             />
           )}
         </div>

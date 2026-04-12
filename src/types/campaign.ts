@@ -142,7 +142,7 @@ export interface LogEntry {
   nodeId: string
   type: 'narrative' | 'decision' | 'check' | 'combat' | 'system'
   content: string
-  metadata?: unknown
+  metadata?: Record<string, unknown>
 }
 
 /**
