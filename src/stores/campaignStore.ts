@@ -57,10 +57,20 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
         updatedAt: now,
       }
       
-      // Guardar en Firestore
+      // Guardar en Firestore (subcollection)
       await setDoc(
         doc(db, 'sessions', sessionId, 'campaign', 'progress'),
         initialProgress
+      )
+      
+      // IMPORTANTE: Sincronizar currentNodeId en el documento raíz
+      console.log('🔄 Sincronizando currentNodeId en session.campaign:', startNode.id)
+      await updateDoc(
+        doc(db, 'sessions', sessionId),
+        {
+          'campaign.currentNodeId': startNode.id,
+          updatedAt: Date.now(),
+        }
       )
       
       set({
@@ -103,6 +113,21 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       } as CampaignProgress
       
       const currentNode = getNodeById(progress.currentNodeId)
+      
+      // IMPORTANTE: Sincronizar currentNodeId en el documento raíz si está desincronizado
+      console.log('🔄 Verificando sincronización de currentNodeId:', progress.currentNodeId)
+      try {
+        await updateDoc(
+          doc(db, 'sessions', sessionId),
+          {
+            'campaign.currentNodeId': progress.currentNodeId,
+            updatedAt: Date.now(),
+          }
+        )
+        console.log('✅ currentNodeId sincronizado en session.campaign')
+      } catch (syncError) {
+        console.warn('⚠️ Error sincronizando currentNodeId (no crítico):', syncError)
+      }
       
       set({
         currentNode: currentNode || null,
@@ -152,11 +177,28 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
         }
       }
       
-      // Guardar en Firestore
+      // Guardar en Firestore (subcollection progress)
       await updateDoc(
         doc(db, 'sessions', progress.sessionId, 'campaign', 'progress'),
         updatedProgress as Record<string, unknown>
       )
+      
+      // IMPORTANTE: También actualizar campaign.currentNodeId en el documento raíz de session
+      // para mantener sincronizado con el sistema de votación
+      console.log('🔄 Navegando: sincronizando currentNodeId en session.campaign:', nodeId)
+      try {
+        await updateDoc(
+          doc(db, 'sessions', progress.sessionId),
+          {
+            'campaign.currentNodeId': nodeId,
+            updatedAt: Date.now(),
+          }
+        )
+        console.log('✅ currentNodeId actualizado en session.campaign')
+      } catch (syncError) {
+        console.error('❌ Error sincronizando currentNodeId:', syncError)
+        throw syncError
+      }
       
       set({
         currentNode: node,
@@ -191,6 +233,8 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       const option = currentNode.options?.find(o => o.id === optionId)
       if (!option) throw new Error(`Opción ${optionId} no encontrada`)
       
+      console.log('📝 Resolviendo decisión:', optionId)
+      
       // Aplicar flags de la opción
       if (option.setsFlags) {
         await get().updateFlags(option.setsFlags)
@@ -203,6 +247,16 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
         content: `Decisión tomada: ${option.text}`,
         metadata: { optionId, nextNodeId: option.nextNodeId },
       })
+      
+      // IMPORTANTE: Limpiar votingState antes de navegar al siguiente nodo
+      console.log('🧹 Limpiando votingState...')
+      await updateDoc(
+        doc(db, 'sessions', progress.sessionId),
+        {
+          'campaign.votingState': null,
+          updatedAt: Date.now(),
+        }
+      )
       
       // Navegar al siguiente nodo
       if (option.nextNodeId) {

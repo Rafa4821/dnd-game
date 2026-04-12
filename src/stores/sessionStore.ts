@@ -389,6 +389,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
 
       console.log('🗳️ Inicializando votación para nodo:', nodeId)
       console.log('📋 Session ID:', session.id)
+      console.log('📋 currentNodeId anterior:', session.campaign.currentNodeId)
 
       const votingState = {
         nodeId,
@@ -403,9 +404,11 @@ export const useSessionStore = create<SessionState>((set, get) => ({
 
       const docRef = doc(db, 'sessions', session.id)
       
-      // Actualizar todo el objeto campaign con el nuevo votingState
+      // IMPORTANTE: Actualizar AMBOS votingState Y currentNodeId para evitar race condition
+      // Esto asegura que cuando se inicializa la votación, el currentNodeId también esté sincronizado
       const updatedCampaign = {
         ...session.campaign,
+        currentNodeId: nodeId,  // ⭐ CLAVE: Sincronizar currentNodeId aquí
         votingState: votingState,
       }
       
@@ -420,6 +423,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
         }
       })
       console.log('✅ Store local actualizado (optimistic)')
+      console.log('✅ currentNodeId sincronizado a:', nodeId)
       
       // Guardar en Firebase (el snapshot lo re-sincronizará)
       await setDoc(docRef, {

@@ -22,33 +22,34 @@ export default function LobbyPage() {
       
       {/* Header */}
       <header className="relative z-10 border-b border-red-900/30 bg-slate-900/80 backdrop-blur-md shadow-lg shadow-red-900/20">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="container mx-auto px-4 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+          <div className="flex items-center gap-3 sm:gap-4">
             <div className="relative group">
               <div className="absolute inset-0 bg-red-600 blur-2xl opacity-50 group-hover:opacity-75 transition-opacity" />
-              <Moon className="w-10 h-10 text-red-500 animate-pulse relative" style={{ filter: 'drop-shadow(0 0 20px rgba(239, 68, 68, 0.8))' }} />
+              <Moon className="w-8 h-8 sm:w-10 sm:h-10 text-red-500 animate-pulse relative" style={{ filter: 'drop-shadow(0 0 20px rgba(239, 68, 68, 0.8))' }} />
             </div>
             <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-red-200 to-red-500 bg-clip-text text-transparent">Sangrebruma</h1>
-              <p className="text-sm text-gray-300 font-medium">
+              <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-red-200 to-red-500 bg-clip-text text-transparent">Sangrebruma</h1>
+              <p className="text-xs sm:text-sm text-gray-300 font-medium">
                 Bienvenido, {user?.displayName || 'Cazador'}
               </p>
             </div>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
             <button
               onClick={() => window.location.href = '/profile'}
-              className="flex items-center gap-2 px-4 py-2 text-sm border-2 border-purple-500/30 rounded-xl hover:border-purple-500/60 hover:bg-purple-950/30 transition-all text-gray-200 font-medium"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border-2 border-purple-500/30 rounded-xl hover:border-purple-500/60 hover:bg-purple-950/30 transition-all text-gray-200 font-medium flex-1 sm:flex-none justify-center"
             >
-              <Users className="w-4 h-4 text-purple-400" />
-              Mi Perfil
+              <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-400" />
+              <span className="hidden sm:inline">Mi Perfil</span>
+              <span className="sm:hidden">Perfil</span>
             </button>
             <button
               onClick={handleSignOut}
-              className="flex items-center gap-2 px-4 py-2 text-sm border-2 border-red-500/30 rounded-xl hover:border-red-500/60 hover:bg-red-950/30 transition-all text-gray-200 font-medium"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border-2 border-red-500/30 rounded-xl hover:border-red-500/60 hover:bg-red-950/30 transition-all text-gray-200 font-medium flex-1 sm:flex-none justify-center"
             >
-              <LogOut className="w-4 h-4 text-red-400" />
+              <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-400" />
               Salir
             </button>
           </div>
@@ -56,30 +57,30 @@ export default function LobbyPage() {
       </header>
 
       {/* Contenido principal */}
-      <main className="relative z-10 container mx-auto px-4 py-12">
-        <div className="max-w-6xl mx-auto space-y-12">
+      <main className="relative z-10 container mx-auto px-4 py-6 sm:py-8 md:py-12">
+        <div className="max-w-6xl mx-auto space-y-8 sm:space-y-12">
           {/* Acciones principales con efectos 3D */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
             {/* Crear sala */}
             <div className="group relative">
               <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-rose-600 rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-500" />
               <button 
                 onClick={() => setShowCreateDialog(true)}
-                className="relative w-full p-10 bg-slate-900/90 backdrop-blur-sm border-2 border-red-900/50 rounded-2xl transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-red-900/50 transition-all duration-300"
+                className="relative w-full p-6 sm:p-8 md:p-10 bg-slate-900/90 backdrop-blur-sm border-2 border-red-900/50 rounded-2xl transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-red-900/50 transition-all duration-300"
               >
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   <div className="relative">
                     <div className="absolute inset-0 bg-red-500/20 blur-xl rounded-full" />
-                    <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-red-500/20 to-rose-600/20 flex items-center justify-center mx-auto border-2 border-red-500/30">
-                      <Plus className="w-10 h-10 text-red-400" />
+                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-red-500/20 to-rose-600/20 flex items-center justify-center mx-auto border-2 border-red-500/30">
+                      <Plus className="w-8 h-8 sm:w-10 sm:h-10 text-red-400" />
                     </div>
                   </div>
                   <div className="text-center">
-                    <h3 className="text-2xl font-bold mb-3 text-white">
+                    <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-white">
                       Crear Nueva Sala
                     </h3>
-                    <p className="text-base text-gray-300 leading-relaxed">
-                      Inicia una nueva campaña y invita a tus amigos
+                    <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
+                      Inicia una nueva partida y comparte el código con tus amigos
                     </p>
                   </div>
                 </div>

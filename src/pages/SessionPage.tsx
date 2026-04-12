@@ -17,6 +17,7 @@ export default function SessionPage() {
   
   const [copied, setCopied] = useState(false)
   const [showCharacterWizard, setShowCharacterWizard] = useState(false)
+  const [allowAutoRedirect, setAllowAutoRedirect] = useState(true)
   
   // Sistema de presencia
   const presenceMap = usePresence(
@@ -36,13 +37,23 @@ export default function SessionPage() {
     return () => unsubscribe()
   }, [sessionId, subscribeToSession, navigate])
 
-  // Auto-redirigir cuando la campaña inicie
+  // Auto-redirigir cuando la campaña inicie (solo si no venimos de campaignPage)
   useEffect(() => {
-    if (currentSession?.status === 'playing') {
+    if (currentSession?.status === 'playing' && allowAutoRedirect) {
       console.log('🎮 Campaña iniciada, redirigiendo...')
       navigate(`/campaign/${sessionId}`)
     }
-  }, [currentSession?.status, sessionId, navigate])
+  }, [currentSession?.status, sessionId, navigate, allowAutoRedirect])
+  
+  // Deshabilitar auto-redirect al montar si venimos de una campaña activa
+  useEffect(() => {
+    // Verificar si venimos desde la página de campaña
+    const fromCampaign = sessionStorage.getItem('fromCampaign')
+    if (fromCampaign === sessionId) {
+      setAllowAutoRedirect(false)
+      sessionStorage.removeItem('fromCampaign')
+    }
+  }, [sessionId])
 
   // Copiar código al portapapeles
   const handleCopyCode = () => {
@@ -79,12 +90,19 @@ export default function SessionPage() {
     if (!isOwner || !allReady) return
     
     try {
+      setAllowAutoRedirect(true) // Permitir redirect después de iniciar
       await startSession()
       // La navegación se hará automáticamente cuando el estado cambie
     } catch (error) {
       console.error('Error starting campaign:', error)
       alert('Error al iniciar la campaña')
     }
+  }
+  
+  // Continuar campaña existente
+  const handleContinueCampaign = () => {
+    setAllowAutoRedirect(true)
+    navigate(`/campaign/${sessionId}`)
   }
 
   // Crear personaje
@@ -150,10 +168,12 @@ export default function SessionPage() {
     )
   }
 
+  const allPlayers = Object.values(currentSession?.players || {})
+  const playerCount = allPlayers.length
+  const allReady = allPlayers.length >= 2 && allPlayers.every((p) => p.ready)
+  const currentPlayer = user ? currentSession?.players[user.uid] : null
   const isOwner = user?.uid === currentSession?.ownerId
-  const playerCount = Object.keys(currentSession?.players || {}).length
-  const currentPlayer = user?.uid && currentSession ? currentSession.players[user.uid] : null
-  const allReady = currentSession ? Object.values(currentSession.players).every(p => p.ready && p.character) : false
+  const isCampaignActive = currentSession?.status === 'playing'
 
   return (
     <div className="min-h-screen gothic-theme relative overflow-hidden">
@@ -464,8 +484,29 @@ export default function SessionPage() {
               )}
             </div>
 
+            {/* Continuar campaña activa */}
+            {isCampaignActive && (
+              <div className="p-4 bg-gradient-to-r from-green-600/20 to-emerald-600/20 border-2 border-green-500/50 rounded-lg space-y-3">
+                <h3 className="font-semibold text-green-300 flex items-center gap-2">
+                  <BookOpen className="w-5 h-5" />
+                  Campaña en Curso
+                </h3>
+                
+                <button
+                  onClick={handleContinueCampaign}
+                  className="w-full py-3 bg-gradient-to-r from-green-600 to-emerald-700 text-white font-bold rounded-lg hover:from-green-500 hover:to-emerald-600 transition-all shadow-lg shadow-green-900/50"
+                >
+                  ➡️ Continuar Aventura
+                </button>
+                
+                <p className="text-xs text-green-300/80">
+                  La campaña está activa. Puedes volver en cualquier momento.
+                </p>
+              </div>
+            )}
+
             {/* Iniciar partida (solo owner) */}
-            {isOwner && (
+            {isOwner && !isCampaignActive && (
               <div className="p-4 bg-card border border-border rounded-lg space-y-3">
                 <h3 className="font-semibold text-foreground">Control de Partida</h3>
                 

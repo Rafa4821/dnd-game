@@ -39,6 +39,13 @@ export default function CampaignPage() {
 
   // Inicializar votación cuando aparezca nodo de decisión
   useEffect(() => {
+    console.log('🔍 Effect votación ejecutado:', {
+      currentNode: currentNode?.id,
+      nodeType: currentNode?.type,
+      sessionCampaignCurrentNodeId: currentSession?.campaign?.currentNodeId,
+      votingStateNodeId: currentSession?.campaign?.votingState?.nodeId,
+    })
+    
     if (!currentNode || currentNode.type !== 'decision') {
       console.log('⏭️ No es nodo de decisión o no hay nodo')
       return
@@ -48,10 +55,14 @@ export default function CampaignPage() {
     
     // Solo inicializar si no hay votingState o es de otro nodo
     const votingState = currentSession?.campaign?.votingState
-    console.log('📊 Estado de votación actual:', votingState)
+    console.log('📊 Estado de votación actual:', {
+      exists: !!votingState,
+      nodeId: votingState?.nodeId,
+      matchesCurrentNode: votingState?.nodeId === currentNode.id,
+    })
     
     if (!votingState || votingState.nodeId !== currentNode.id) {
-      console.log('🔄 Inicializando nueva votación...')
+      console.log('🔄 Inicializando nueva votación para:', currentNode.id)
       initializeVoting(currentNode.id)
     } else {
       console.log('✅ Votación ya inicializada para este nodo')
@@ -149,24 +160,31 @@ export default function CampaignPage() {
 
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-red-900/30 bg-slate-900/80 backdrop-blur-md shadow-lg shadow-red-900/20">
-        <div className="container mx-auto px-4 sm:px-6 py-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
+        <div className="container mx-auto px-2 sm:px-4 md:px-6 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
               <button
-                onClick={() => navigate(`/session/${sessionId}`)}
-                className="p-2 hover:bg-red-950/50 rounded-xl border border-red-900/30 hover:border-red-600/50 transition-all"
+                onClick={() => {
+                  // Marcar que venimos de la campaña para prevenir auto-redirect
+                  if (sessionId) {
+                    sessionStorage.setItem('fromCampaign', sessionId)
+                  }
+                  navigate(`/session/${sessionId}`)
+                }}
+                className="p-2 hover:bg-red-950/50 rounded-xl border border-red-900/30 hover:border-red-600/50 transition-all flex-shrink-0"
+                title="Volver a la sala"
               >
-                <ArrowLeft className="w-5 h-5 text-gray-400 hover:text-white" />
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 hover:text-white" />
               </button>
               
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-4">
                 <div className="relative">
                   <div className="absolute inset-0 bg-red-500/20 blur-xl rounded-full" />
-                  <Moon className="relative w-10 h-10 text-red-400" />
+                  <Moon className="relative w-8 h-8 sm:w-10 sm:h-10 text-red-400" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-red-400 via-rose-300 to-red-500 bg-clip-text text-transparent">Sangrebruma</h1>
-                  <p className="text-sm text-gray-400 font-mono font-bold">
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-red-400 via-rose-300 to-red-500 bg-clip-text text-transparent">Sangrebruma</h1>
+                  <p className="text-xs sm:text-sm text-gray-400 font-mono font-bold">
                     {currentSession?.code || 'Campaña'}
                   </p>
                 </div>
@@ -174,26 +192,26 @@ export default function CampaignPage() {
             </div>
 
             {/* Variables del juego */}
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4 w-full sm:w-auto">
               <div className="relative group/var">
                 <div className="absolute -inset-0.5 bg-purple-600 rounded-xl blur opacity-20 group-hover/var:opacity-30 transition" />
-                <div className="relative flex items-center gap-2 px-4 py-2 bg-slate-800/80 border-2 border-purple-900/50 rounded-xl">
-                  <Eye className="w-4 h-4 text-purple-400" />
-                  <span className="text-sm font-bold text-white">{progress.variables.darkness}/6</span>
+                <div className="relative flex items-center gap-1 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-slate-800/80 border-2 border-purple-900/50 rounded-xl">
+                  <Eye className="w-3 h-3 sm:w-4 sm:h-4 text-purple-400" />
+                  <span className="text-xs sm:text-sm font-bold text-white">{progress.variables.darkness}/6</span>
                 </div>
               </div>
               <div className="relative group/var">
                 <div className="absolute -inset-0.5 bg-red-600 rounded-xl blur opacity-20 group-hover/var:opacity-30 transition" />
-                <div className="relative flex items-center gap-2 px-4 py-2 bg-slate-800/80 border-2 border-red-900/50 rounded-xl">
-                  <Flame className="w-4 h-4 text-red-400" />
-                  <span className="text-sm font-bold text-white">{progress.variables.bloodDebt}/3</span>
+                <div className="relative flex items-center gap-1 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-slate-800/80 border-2 border-red-900/50 rounded-xl">
+                  <Flame className="w-3 h-3 sm:w-4 sm:h-4 text-red-400" />
+                  <span className="text-xs sm:text-sm font-bold text-white">{progress.variables.bloodDebt}/3</span>
                 </div>
               </div>
               <div className="relative group/var">
                 <div className="absolute -inset-0.5 bg-amber-600 rounded-xl blur opacity-20 group-hover/var:opacity-30 transition" />
-                <div className="relative flex items-center gap-2 px-4 py-2 bg-slate-800/80 border-2 border-amber-900/50 rounded-xl">
-                  <Sparkles className="w-4 h-4 text-amber-400" />
-                  <span className="text-sm font-bold text-white">Acto {progress.variables.act}/3</span>
+                <div className="relative flex items-center gap-1 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-slate-800/80 border-2 border-amber-900/50 rounded-xl">
+                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-amber-400" />
+                  <span className="text-xs sm:text-sm font-bold text-white">Acto {progress.variables.act}/3</span>
                 </div>
               </div>
               
@@ -202,9 +220,9 @@ export default function CampaignPage() {
                 className="relative group/btn"
               >
                 <div className="absolute -inset-0.5 bg-blue-600 rounded-xl blur opacity-0 group-hover/btn:opacity-50 transition" />
-                <div className="relative flex items-center gap-2 px-4 py-2 bg-slate-800/80 hover:bg-slate-800 border-2 border-blue-900/50 hover:border-blue-600/50 rounded-xl transition-all">
-                  <ScrollText className="w-4 h-4 text-blue-400" />
-                  <span className="text-sm font-bold text-white">Log</span>
+                <div className="relative flex items-center gap-1 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-slate-800/80 hover:bg-slate-800 border-2 border-blue-900/50 hover:border-blue-600/50 rounded-xl transition-all">
+                  <ScrollText className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400" />
+                  <span className="text-xs sm:text-sm font-bold text-white hidden sm:inline">Log</span>
                 </div>
               </button>
 
@@ -214,9 +232,9 @@ export default function CampaignPage() {
                 title="Reiniciar campaña desde el inicio"
               >
                 <div className="absolute -inset-0.5 bg-red-600 rounded-xl blur opacity-0 group-hover/btn:opacity-50 transition" />
-                <div className="relative flex items-center gap-2 px-4 py-2 bg-slate-800/80 hover:bg-red-950/50 border-2 border-red-900/50 hover:border-red-600/50 rounded-xl transition-all">
-                  <Skull className="w-4 h-4 text-red-400" />
-                  <span className="text-sm font-bold text-red-300">Reiniciar</span>
+                <div className="relative flex items-center gap-1 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-slate-800/80 hover:bg-red-950/50 border-2 border-red-900/50 hover:border-red-600/50 rounded-xl transition-all">
+                  <Skull className="w-3 h-3 sm:w-4 sm:h-4 text-red-400" />
+                  <span className="text-xs sm:text-sm font-bold text-red-300 hidden md:inline">Reiniciar</span>
                 </div>
               </button>
             </div>
