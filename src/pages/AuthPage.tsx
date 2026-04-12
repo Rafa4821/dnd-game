@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
-import { Moon, Loader2, Mail, Lock, User } from 'lucide-react'
+import { Moon, Loader2, Mail, Lock, User, Sparkles, Shield } from 'lucide-react'
 
 export default function AuthPage() {
   const navigate = useNavigate()
@@ -47,111 +47,131 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 gothic-theme">
-      <div className="w-full max-w-md space-y-8">
-        {/* Logo */}
-        <div className="text-center space-y-4">
+    <div className="min-h-screen flex items-center justify-center p-4 gothic-theme relative overflow-hidden">
+      {/* Fondo animado con efecto de niebla */}
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-red-950/30 opacity-50" />
+      <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(220, 38, 38, 0.1) 0%, transparent 50%)' }} />
+      
+      <div className="w-full max-w-md space-y-8 relative z-10">
+        {/* Logo con efecto 3D */}
+        <div className="text-center space-y-6">
           <div className="flex justify-center">
-            <Moon className="w-16 h-16 text-primary animate-pulse" />
+            <div className="relative group">
+              <div className="absolute inset-0 bg-red-600 blur-3xl opacity-50 group-hover:opacity-75 transition-opacity" />
+              <Moon className="w-20 h-20 text-red-500 animate-pulse relative drop-shadow-2xl" style={{ filter: 'drop-shadow(0 0 30px rgba(239, 68, 68, 0.8))' }} />
+            </div>
           </div>
-          <h1 className="text-4xl font-bold tracking-tight">Sangrebruma</h1>
-          <p className="text-muted-foreground">
+          <div className="transform hover:scale-105 transition-transform duration-300">
+            <h1 className="text-5xl font-bold tracking-tight bg-gradient-to-b from-red-200 via-red-300 to-red-600 bg-clip-text text-transparent drop-shadow-2xl" style={{ textShadow: '0 0 40px rgba(239, 68, 68, 0.5)' }}>
+              Sangrebruma
+            </h1>
+          </div>
+          <p className="text-lg font-medium text-gray-200">
             {isSignUp ? 'Crea tu cuenta para comenzar' : 'Inicia sesión para continuar'}
           </p>
         </div>
 
-        {/* Formulario */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Email */}
-          <div className="space-y-2">
-            <label htmlFor="email" className="block text-sm font-medium">
-              Email
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="tu@email.com"
-                className="w-full pl-10 pr-4 py-3 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                disabled={loading}
-                autoFocus
-              />
-            </div>
-          </div>
-
-          {/* Password */}
-          <div className="space-y-2">
-            <label htmlFor="password" className="block text-sm font-medium">
-              Contraseña
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Mínimo 6 caracteres"
-                className="w-full pl-10 pr-4 py-3 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                disabled={loading}
-                minLength={6}
-              />
-            </div>
-          </div>
-
-          {/* Nombre (solo al registrarse) */}
-          {isSignUp && (
+        {/* Formulario con glassmorphism */}
+        <div className="relative group">
+          <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-rose-600 rounded-3xl blur opacity-25 group-hover:opacity-40 transition duration-500" />
+          <form onSubmit={handleSubmit} className="relative bg-slate-900/90 backdrop-blur-sm border-2 border-red-900/50 rounded-3xl p-8 space-y-6 shadow-2xl">
+            {/* Email */}
             <div className="space-y-2">
-              <label htmlFor="displayName" className="block text-sm font-medium">
-                Nombre de jugador
+              <label htmlFor="email" className="block text-sm font-bold text-white">
+                Email
               </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <div className="relative group">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-red-400 z-10" />
                 <input
-                  id="displayName"
-                  type="text"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="Ej: Thorin"
-                  className="w-full pl-10 pr-4 py-3 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                  maxLength={20}
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="tu@email.com"
+                  className="w-full pl-12 pr-4 py-4 bg-slate-800/90 backdrop-blur-sm border-2 border-slate-700/50 rounded-xl focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/30 transition-all text-white placeholder:text-gray-500 font-medium"
                   disabled={loading}
+                  autoFocus
                 />
               </div>
-              <p className="text-xs text-muted-foreground">
-                {displayName.length}/20 caracteres
-              </p>
             </div>
-          )}
 
-          {/* Errores */}
-          {(error || localError) && (
-            <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
-              <p className="text-sm text-destructive">
-                {localError || error}
-              </p>
+            {/* Password */}
+            <div className="space-y-2">
+              <label htmlFor="password" className="block text-sm font-bold text-white">
+                Contraseña
+              </label>
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400 z-10" />
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Mínimo 6 caracteres"
+                  className="w-full pl-12 pr-4 py-4 bg-slate-800/90 backdrop-blur-sm border-2 border-slate-700/50 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30 transition-all text-white placeholder:text-gray-500 font-medium"
+                  disabled={loading}
+                  minLength={6}
+                />
+              </div>
             </div>
-          )}
 
-          {/* Botón */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                {isSignUp ? 'Creando cuenta...' : 'Iniciando sesión...'}
-              </>
-            ) : (
-              isSignUp ? 'Crear cuenta' : 'Iniciar sesión'
+            {/* Nombre (solo al registrarse) */}
+            {isSignUp && (
+              <div className="space-y-2">
+                <label htmlFor="displayName" className="block text-sm font-bold text-white">
+                  Nombre de jugador
+                </label>
+                <div className="relative group">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400 z-10" />
+                  <input
+                    id="displayName"
+                    type="text"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder="Ej: Thorin"
+                    className="w-full pl-12 pr-4 py-4 bg-slate-800/90 backdrop-blur-sm border-2 border-slate-700/50 rounded-xl focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/30 transition-all text-white placeholder:text-gray-500 font-medium"
+                    maxLength={20}
+                    disabled={loading}
+                  />
+                </div>
+                <p className="text-sm text-gray-300 font-medium">
+                  {displayName.length}/20 caracteres
+                </p>
+              </div>
             )}
-          </button>
-        </form>
+
+            {/* Errores con mejor visibilidad */}
+            {(error || localError) && (
+              <div className="p-4 bg-red-950/50 backdrop-blur-sm border-2 border-red-500/50 rounded-xl">
+                <p className="text-sm text-red-200 font-medium">
+                  ⚠️ {localError || error}
+                </p>
+              </div>
+            )}
+
+            {/* Botón con efecto premium */}
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-red-600 via-rose-600 to-red-600 rounded-xl blur opacity-75 group-hover:opacity-100 animate-pulse" />
+              <button
+                type="submit"
+                disabled={loading}
+                className="relative w-full py-4 bg-gradient-to-r from-red-600 to-rose-700 text-white font-bold text-lg rounded-xl hover:from-red-500 hover:to-rose-600 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3 transform hover:scale-105 shadow-xl shadow-red-900/50 border-2 border-red-400/50"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                    {isSignUp ? 'Creando cuenta...' : 'Iniciando sesión...'}
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-6 h-6" />
+                    {isSignUp ? 'Crear cuenta' : 'Iniciar sesión'}
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
 
         {/* Toggle entre Login/Registro */}
         <div className="text-center">
@@ -160,7 +180,7 @@ export default function AuthPage() {
               setIsSignUp(!isSignUp)
               setLocalError('')
             }}
-            className="text-sm text-primary hover:underline"
+            className="text-base font-bold text-red-400 hover:text-red-300 transition-colors border-2 border-red-500/30 px-6 py-3 rounded-xl hover:border-red-500/60 hover:bg-red-950/30"
             disabled={loading}
           >
             {isSignUp 
@@ -169,12 +189,17 @@ export default function AuthPage() {
           </button>
         </div>
 
-        {/* Info */}
-        <div className="p-4 bg-muted/50 border border-border rounded-lg">
-          <p className="text-xs text-muted-foreground text-center">
-            🔒 Tu progreso se guardará automáticamente. Usa el mismo email 
-            para recuperar tus partidas guardadas.
-          </p>
+        {/* Info con glassmorphism */}
+        <div className="relative group">
+          <div className="absolute -inset-1 bg-gradient-to-r from-amber-600 to-orange-600 rounded-2xl blur opacity-20 group-hover:opacity-30 transition duration-500" />
+          <div className="relative p-5 bg-slate-800/80 backdrop-blur-sm border-2 border-amber-600/30 rounded-2xl">
+            <div className="flex items-start gap-3">
+              <Shield className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-gray-200 font-medium leading-relaxed">
+                Tu progreso se guardará automáticamente. Usa el mismo email para recuperar tus partidas guardadas.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

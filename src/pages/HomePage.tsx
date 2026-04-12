@@ -1,75 +1,89 @@
 import { Link } from 'react-router-dom'
-import { Moon, Sword, Users, ArrowRight } from 'lucide-react'
+import { Moon, Sword, Users, ArrowRight, Sparkles } from 'lucide-react'
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 gothic-theme">
-      <div className="max-w-4xl w-full space-y-8 text-center">
-        {/* Logo/Título */}
-        <div className="space-y-4">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 gothic-theme relative overflow-hidden">
+      {/* Fondo animado con efecto de niebla */}
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-red-950/30 opacity-50" />
+      <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(220, 38, 38, 0.1) 0%, transparent 50%)' }} />
+      
+      <div className="max-w-6xl w-full space-y-12 text-center relative z-10">
+        {/* Logo/Título con efecto 3D */}
+        <div className="space-y-6 perspective-1000">
           <div className="flex justify-center">
-            <Moon className="w-20 h-20 text-primary animate-pulse" />
+            <div className="relative group">
+              <div className="absolute inset-0 bg-red-600 blur-3xl opacity-50 group-hover:opacity-75 transition-opacity" />
+              <Moon className="w-24 h-24 text-red-500 animate-pulse relative drop-shadow-2xl" style={{ filter: 'drop-shadow(0 0 30px rgba(239, 68, 68, 0.8))' }} />
+            </div>
           </div>
-          <h1 className="text-6xl font-bold tracking-tight text-foreground">
-            Sangrebruma
-          </h1>
-          <p className="text-xl text-muted-foreground">
+          <div className="transform hover:scale-105 transition-transform duration-300">
+            <h1 className="text-7xl md:text-8xl font-bold tracking-tight bg-gradient-to-b from-red-200 via-red-300 to-red-600 bg-clip-text text-transparent drop-shadow-2xl" style={{ textShadow: '0 0 40px rgba(239, 68, 68, 0.5)' }}>
+              Sangrebruma
+            </h1>
+          </div>
+          <p className="text-2xl font-medium text-gray-200 drop-shadow-lg max-w-2xl mx-auto">
             Una campaña gótica de D&D sin DM para 2-6 jugadores
           </p>
         </div>
 
-        {/* Características */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
-          <div className="p-6 border border-border rounded-lg bg-card">
-            <Sword className="w-12 h-12 text-primary mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Combate Táctico</h3>
-            <p className="text-sm text-muted-foreground">
-              Sistema por turnos con grid, estados y IA de monstruos sin LLM
-            </p>
+        {/* Características con efecto 3D */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8">
+          <div className="group relative">
+            <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-rose-600 rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-500" />
+            <div className="relative p-8 bg-slate-900/90 backdrop-blur-sm border-2 border-red-900/50 rounded-2xl transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-red-900/50 transition-all duration-300">
+              <div className="relative">
+                <div className="absolute inset-0 bg-red-500/20 blur-xl rounded-full" />
+                <Sword className="w-14 h-14 text-red-400 mx-auto mb-6 relative drop-shadow-lg" />
+              </div>
+              <h3 className="text-xl font-bold mb-3 text-white">Combate Táctico</h3>
+              <p className="text-base text-gray-300 leading-relaxed">
+                Sistema por turnos con grid, estados y IA de monstruos sin LLM
+              </p>
+            </div>
           </div>
           
-          <div className="p-6 border border-border rounded-lg bg-card">
-            <Users className="w-12 h-12 text-primary mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Multiplayer Realtime</h3>
-            <p className="text-sm text-muted-foreground">
-              Sincronización instantánea con Firebase para 2-6 jugadores
-            </p>
+          <div className="group relative">
+            <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-500" />
+            <div className="relative p-8 bg-slate-900/90 backdrop-blur-sm border-2 border-purple-900/50 rounded-2xl transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-purple-900/50 transition-all duration-300">
+              <div className="relative">
+                <div className="absolute inset-0 bg-purple-500/20 blur-xl rounded-full" />
+                <Users className="w-14 h-14 text-purple-400 mx-auto mb-6 relative drop-shadow-lg" />
+              </div>
+              <h3 className="text-xl font-bold mb-3 text-white">Multiplayer Realtime</h3>
+              <p className="text-base text-gray-300 leading-relaxed">
+                Sincronización instantánea con Firebase para 2-6 jugadores
+              </p>
+            </div>
           </div>
           
-          <div className="p-6 border border-border rounded-lg bg-card">
-            <Moon className="w-12 h-12 text-primary mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Historia Ramificada</h3>
-            <p className="text-sm text-muted-foreground">
-              16 nodos con decisiones que afectan el valle y 3 finales distintos
-            </p>
+          <div className="group relative">
+            <div className="absolute -inset-1 bg-gradient-to-r from-amber-600 to-orange-600 rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-500" />
+            <div className="relative p-8 bg-slate-900/90 backdrop-blur-sm border-2 border-amber-900/50 rounded-2xl transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-900/50 transition-all duration-300">
+              <div className="relative">
+                <div className="absolute inset-0 bg-amber-500/20 blur-xl rounded-full" />
+                <Moon className="w-14 h-14 text-amber-400 mx-auto mb-6 relative drop-shadow-lg" />
+              </div>
+              <h3 className="text-xl font-bold mb-3 text-white">Historia Ramificada</h3>
+              <p className="text-base text-gray-300 leading-relaxed">
+                16 nodos con decisiones que afectan el valle y 3 finales distintos
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* CTA Button */}
-        <div className="pt-4">
-          <Link
-            to="/auth"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-all transform hover:scale-105"
-          >
-            Comenzar Aventura
-            <ArrowRight className="w-5 h-5" />
-          </Link>
-        </div>
-
-        {/* Estado del proyecto */}
-        <div className="pt-8 space-y-4">
-          <div className="inline-block px-4 py-2 bg-secondary rounded-full">
-            <p className="text-sm font-medium">
-              🚧 Proyecto en construcción - Paquete 0: Setup completado
-            </p>
-          </div>
-          
-          <div className="text-sm text-muted-foreground space-y-1">
-            <p>✅ React + Vite + TypeScript</p>
-            <p>✅ TailwindCSS + shadcn/ui</p>
-            <p>✅ Firebase configurado</p>
-            <p>✅ Sistema de autenticación anónima</p>
-            <p>⏳ Modelo de datos y salas multiplayer</p>
+        {/* CTA Button con efecto premium */}
+        <div className="pt-8">
+          <div className="relative inline-block group">
+            <div className="absolute -inset-2 bg-gradient-to-r from-red-600 via-rose-600 to-red-600 rounded-2xl blur-lg opacity-75 group-hover:opacity-100 animate-pulse" />
+            <Link
+              to="/auth"
+              className="relative inline-flex items-center gap-3 px-12 py-5 bg-gradient-to-r from-red-600 to-rose-700 text-white font-bold text-lg rounded-xl hover:from-red-500 hover:to-rose-600 transition-all transform hover:scale-110 hover:shadow-2xl shadow-red-900/50 border-2 border-red-400/50"
+            >
+              <Sparkles className="w-6 h-6 animate-pulse" />
+              Comenzar Aventura
+              <ArrowRight className="w-6 h-6" />
+            </Link>
           </div>
         </div>
       </div>
