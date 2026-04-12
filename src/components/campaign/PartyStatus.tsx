@@ -85,7 +85,7 @@ export function PartyStatus() {
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-bold text-white truncate">{character.name}</span>
                         {isOwner && (
-                          <Crown className="w-3 h-3 text-amber-400 flex-shrink-0" title="Líder" />
+                          <Crown className="w-3 h-3 text-amber-400 flex-shrink-0" />
                         )}
                       </div>
                       <div className="flex items-center gap-2 text-xs text-gray-400">

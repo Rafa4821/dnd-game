@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useSessionStore } from '@/stores/sessionStore'
-import { Heart, Shield, Zap, ChevronDown, ChevronUp, Sword, Package, Sparkles } from 'lucide-react'
+import { useAuthStore } from '@/stores/authStore'
+import { Heart, Shield, Zap, ChevronDown, ChevronUp, Sword, Sparkles } from 'lucide-react'
 
 export function CharacterPanel() {
-  const { currentSession, currentUser } = useSessionStore()
+  const { currentSession } = useSessionStore()
+  const { user: currentUser } = useAuthStore()
   const [expanded, setExpanded] = useState(true)
-  const [showInventory, setShowInventory] = useState(false)
-  const [showAbilities, setShowAbilities] = useState(false)
 
   const myPlayer = currentUser?.uid ? currentSession?.players[currentUser.uid] : null
   const character = myPlayer?.character
@@ -109,73 +109,12 @@ export function CharacterPanel() {
               </div>
             </div>
 
-            {/* Abilities Toggle */}
-            <button
-              onClick={() => setShowAbilities(!showAbilities)}
-              className="w-full p-3 bg-slate-800/50 hover:bg-slate-800/80 border border-slate-700/50 rounded-xl transition-all flex items-center justify-between"
-            >
-              <span className="text-sm font-bold text-purple-300">⚔️ Habilidades</span>
-              {showAbilities ? (
-                <ChevronUp className="w-4 h-4 text-gray-400" />
-              ) : (
-                <ChevronDown className="w-4 h-4 text-gray-400" />
-              )}
-            </button>
-
-            {showAbilities && (
-              <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
-                {character.specialAbilities?.slice(0, 3).map((ability) => (
-                  <div key={ability.id} className="p-3 bg-slate-800/60 border border-slate-700/50 rounded-lg">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-bold text-amber-300">{ability.name}</span>
-                      {ability.maxUses && (
-                        <span className="text-xs px-2 py-1 bg-amber-600/20 text-amber-300 rounded font-bold">
-                          {ability.uses}/{ability.maxUses}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-gray-400">{ability.description}</p>
-                  </div>
-                )) || (
-                  <p className="text-xs text-gray-500 text-center py-2">Sin habilidades especiales</p>
-                )}
-              </div>
-            )}
-
-            {/* Inventory Toggle */}
-            <button
-              onClick={() => setShowInventory(!showInventory)}
-              className="w-full p-3 bg-slate-800/50 hover:bg-slate-800/80 border border-slate-700/50 rounded-xl transition-all flex items-center justify-between"
-            >
-              <span className="text-sm font-bold text-green-300 flex items-center gap-2">
-                <Package className="w-4 h-4" />
-                Inventario
-              </span>
-              {showInventory ? (
-                <ChevronUp className="w-4 h-4 text-gray-400" />
-              ) : (
-                <ChevronDown className="w-4 h-4 text-gray-400" />
-              )}
-            </button>
-
-            {showInventory && (
-              <div className="grid grid-cols-2 gap-2 animate-in slide-in-from-top-2 duration-300">
-                {character.inventory?.slice(0, 6).map((item) => (
-                  <div key={item.id} className="p-2 bg-slate-800/60 border border-slate-700/50 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-white truncate">{item.name}</span>
-                      {item.quantity > 1 && (
-                        <span className="text-xs px-1.5 py-0.5 bg-green-600/20 text-green-300 rounded font-bold">
-                          x{item.quantity}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )) || (
-                  <p className="col-span-2 text-xs text-gray-500 text-center py-2">Inventario vacío</p>
-                )}
-              </div>
-            )}
+            {/* Info adicional */}
+            <div className="p-3 bg-slate-800/60 border border-slate-700/50 rounded-xl">
+              <p className="text-xs text-gray-400 text-center">
+                💡 Información completa disponible después de crear el personaje
+              </p>
+            </div>
           </div>
         )}
       </div>
